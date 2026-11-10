@@ -2210,3 +2210,13 @@ main:focus { outline: none; }
 .hubspot__vorab[hidden] { display: none; }
 .hubspot__vorab p { margin: 0; }
 .hubspot .formular__status:empty { display: none; }
+
+/* Rechtstexte: Unterüberschriften, Absätze und Adressen in Impressum und Datenschutz */
+.recht h3 { margin-top: var(--abstand-6); font-size: var(--schrift-groesse-text); }
+.recht h4 { margin-top: var(--abstand-5); font-size: var(--schrift-groesse-text); }
+.recht h2 + h3, .recht h3 + h4 { margin-top: var(--abstand-4); }
+.recht p { max-width: 66ch; margin: var(--abstand-3) 0 0; }
+.recht .abschnitt__kopf p { margin-top: 0; }
+.recht p.etikett { margin-top: var(--abstand-6); }
+.recht .recht__aussagen li { max-width: 66ch; }
+.recht__adresse { font-style: normal; }
