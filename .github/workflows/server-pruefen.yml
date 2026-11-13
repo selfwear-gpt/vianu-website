@@ -52,7 +52,16 @@ jobs:
             cat /etc/docker/daemon.json 2>/dev/null | head -20 || echo "keine daemon.json lesbar"
             docker inspect --format '{{.Name}}: {{.HostConfig.LogConfig.Type}} {{json .HostConfig.LogConfig.Config}}' $(docker ps -aq) 2>&1 | head -10
             echo
+            echo "=== Docker-Verzeichnis und Container-Logs (mit sudo, nur Größen) ==="
+            sudo -n du -xh --max-depth=1 /var/lib/docker 2>&1 | sort -hr | head -6
+            sudo -n sh -c 'du -sh /var/lib/docker/containers/*/*-json.log 2>/dev/null' | sort -hr | head -6 | sed -E 's#/var/lib/docker/containers/([a-f0-9]{6})[a-f0-9]*/#\1 #'
+            for c in $(docker ps -aq); do docker inspect -f '{{.Name}} restarts={{.RestartCount}} exit={{.State.ExitCode}}' $c; done 2>&1 | grep -v 'restarts=0 exit=0'
+            echo
+            echo "=== /var/log (nur Größen) ==="
+            sudo -n du -xh --max-depth=1 /var/log 2>&1 | sort -hr | head -6
+            echo
             echo "=== Journal ==="
+            sudo -n journalctl --disk-usage 2>&1
             journalctl --disk-usage 2>&1
             ls /etc/systemd/journald.conf.d 2>/dev/null; grep -hE '^(SystemMaxUse|SystemKeepFree|MaxRetentionSec)' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null || echo "keine Grenze gesetzt"
             echo
