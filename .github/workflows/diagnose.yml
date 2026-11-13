@@ -1,0 +1,50 @@
+name: Server-Diagnose (nur lesen)
+
+# Nur von Hand startbar. Liest Plattenbelegung und Ordnergrößen auf dem Server und zeigt, welche Befehle
+# deploy-website.sh ausführt. Ändert und löscht nichts. Das Repo ist öffentlich, die Logs sind es auch:
+# deshalb keine Dateiinhalte außer den Befehlszeilen des Skripts, Zugangsdaten in URLs werden geschwärzt.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vianu247
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Server lesen
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            echo "=== Platte ==="
+            df -h / 2>&1
+            df -i / 2>&1 | tail -1
+            echo
+            echo "=== Größte Ordner (eine Ebene unter /) ==="
+            du -xh --max-depth=1 / 2>/dev/null | sort -h | tail -12
+            echo
+            echo "=== Größte Ordner unter /var und /srv ==="
+            du -xh --max-depth=2 /var /srv 2>/dev/null | sort -h | tail -15
+            echo
+            echo "=== Git-Ordner (bis 5 Ebenen) mit Größe ==="
+            find / -xdev -maxdepth 5 -name .git -type d 2>/dev/null | while read d; do du -sh "$d" 2>/dev/null; done
+            echo
+            echo "=== Ordner mit vielen Kopien (website, vianu, release, deploy) ==="
+            find / -xdev -maxdepth 4 \( -iname '*vianu*' -o -iname '*website*' -o -iname 'release*' \) -type d 2>/dev/null | head -30
+            echo
+            echo "=== Docker ==="
+            (command -v docker >/dev/null && docker system df 2>&1) || echo "kein Docker"
+            echo
+            echo "=== Befehle in deploy-website.sh (nur Befehlszeilen, Zugangsdaten geschwärzt) ==="
+            S=/usr/local/bin/deploy-website.sh
+            if [ -r "$S" ]; then
+              wc -l "$S"
+              grep -nE 'git |rm |rsync|cp |mv |mkdir|ln |chown|chmod|cd |systemctl|nginx|docker' "$S" | sed -E 's#://[^@/ ]*@#://***@#g' | head -60
+            else
+              echo "Skript nicht lesbar für diesen Benutzer"
+            fi
