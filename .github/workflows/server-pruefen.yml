@@ -1,8 +1,9 @@
-name: Postgres und Log-Wachstum messen (nur Zahlen)
+name: Drei große Container-Logs leeren
 
-# Nur von Hand startbar, ändert nichts. Gibt nur Zustände und Zahlen aus: Container-Status, Dateigrößen der Logs
-# (zweimal im Abstand von 20 s, ohne docker logs), Datenbank-Zahlen. Keine Log-Inhalte.
-# Das Repo ist öffentlich, die Logs auch.
+# Nur von Hand startbar. Leert ausschließlich die Log-Dateien der Container vianu-server-worker-1,
+# vianu-server-worker-production-1 und vianu-server-dashboard-1 (truncate, die Container laufen weiter).
+# Gibt nur Größen und Zustände aus, keine Log-Inhalte. Das Repo ist öffentlich, die Logs auch.
+# Einmalige Aktion, wird danach wieder entfernt.
 on:
   workflow_dispatch:
 
@@ -11,11 +12,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  messen:
+  leeren:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Zahlen lesen
+      - name: Logs leeren
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -23,19 +24,20 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           command_timeout: 2m
           script: |
-            PG=vianu-server-postgres-1
-            sizes() { for n in vianu-server-worker-1 vianu-server-worker-production-1 vianu-server-dashboard-1 vianu-server-api-1; do id=$(docker inspect -f '{{.Id}}' $n); echo "$n $(sudo -n stat -c %s /var/lib/docker/containers/$id/$id-json.log)"; done; }
-            echo "=== Container ==="
-            docker ps -a --format '{{.Names}}: {{.Status}}' | sed -E 's#^/##'
+            NAMEN="vianu-server-worker-1 vianu-server-worker-production-1 vianu-server-dashboard-1"
+            groesse() { for n in $NAMEN; do id=$(docker inspect -f '{{.Id}}' $n); echo "$n $(sudo -n stat -c %s /var/lib/docker/containers/$id/$id-json.log) Byte"; done; }
+            echo "=== vorher ==="
+            groesse
             df -h / | tail -1
             echo
-            echo "=== Postgres ==="
-            timeout 20 docker exec $PG sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g'
-            echo "select count(*) as tabellen, to_regclass('public.jobs') is not null as jobs_vorhanden from information_schema.tables where table_schema='public'" | timeout 20 docker exec -i $PG sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g' | head -3
+            for n in $NAMEN; do
+              id=$(docker inspect -f '{{.Id}}' $n)
+              sudo -n truncate -s 0 "/var/lib/docker/containers/$id/$id-json.log" && echo "geleert: $n"
+            done
             echo
-            echo "=== Log-Größen in Byte, jetzt und nach 20 s ==="
-            sizes > /tmp/g1.txt; cat /tmp/g1.txt
-            sleep 20
-            sizes > /tmp/g2.txt
-            paste -d' ' /tmp/g1.txt /tmp/g2.txt | awk '{print $1, "Zuwachs:", $4-$2, "Byte in 20 s"}'
-            rm -f /tmp/g1.txt /tmp/g2.txt
+            echo "=== nachher ==="
+            groesse
+            df -h / | tail -1
+            echo
+            echo "=== Container ==="
+            docker ps -a --format '{{.Names}}: {{.Status}}'
