@@ -1,7 +1,7 @@
-name: Postgres starten und Zahlen messen
+name: Postgres und Log-Wachstum messen (nur Zahlen)
 
-# Nur von Hand startbar. Startet den gestoppten Postgres-Container (docker start, rückgängig mit docker stop)
-# und gibt nur Zahlen und Zustände aus: Status, Log-Wachstum der Worker, Tabellenzahl. Keine Log-Inhalte.
+# Nur von Hand startbar, ändert nichts. Gibt nur Zustände und Zahlen aus: Container-Status, Dateigrößen der Logs
+# (zweimal im Abstand von 20 s, ohne docker logs), Datenbank-Zahlen. Keine Log-Inhalte.
 # Das Repo ist öffentlich, die Logs auch.
 on:
   workflow_dispatch:
@@ -11,36 +11,31 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  starten:
+  messen:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
-      - name: Postgres starten
+      - name: Zahlen lesen
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
           script: |
             PG=vianu-server-postgres-1
-            sizes() { for n in vianu-server-worker-1 vianu-server-worker-production-1 vianu-server-dashboard-1 vianu-server-api-1; do id=$(docker inspect -f '{{.Id}}' $n); echo "$n $(sudo -n stat -c %s /var/lib/docker/containers/$id/$id-json.log) Byte"; done; }
-            echo "=== vorher ==="
-            docker inspect -f 'postgres: {{.State.Status}} exit={{.State.ExitCode}}' $PG
+            sizes() { for n in vianu-server-worker-1 vianu-server-worker-production-1 vianu-server-dashboard-1 vianu-server-api-1; do id=$(docker inspect -f '{{.Id}}' $n); echo "$n $(sudo -n stat -c %s /var/lib/docker/containers/$id/$id-json.log)"; done; }
+            echo "=== Container ==="
+            docker ps -a --format '{{.Names}}: {{.Status}}' | sed -E 's#^/##'
             df -h / | tail -1
-            sizes
             echo
-            echo "=== docker start ==="
-            docker start $PG
-            sleep 25
-            docker inspect -f 'postgres: {{.State.Status}} exit={{.State.ExitCode}} neustarts={{.RestartCount}}' $PG
-            docker exec $PG sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g'
+            echo "=== Postgres ==="
+            timeout 20 docker exec $PG sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g'
+            echo "select count(*) as tabellen, to_regclass('public.jobs') is not null as jobs_vorhanden from information_schema.tables where table_schema='public'" | timeout 20 docker exec -i $PG sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g' | head -3
             echo
-            echo "=== Datenbank (nur Zahlen) ==="
-            echo "select count(*) as tabellen, to_regclass('public.jobs') is not null as jobs_vorhanden from information_schema.tables where table_schema='public'" | docker exec -i $PG sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' 2>&1 | sed -E 's/[A-Za-z0-9_-]{16,}/***/g' | head -3
-            echo
-            echo "=== Wachstum der Worker-Logs (Zeilen in den letzten 30 s) ==="
-            sleep 30
-            for n in vianu-server-worker-1 vianu-server-worker-production-1 vianu-server-dashboard-1 vianu-server-api-1; do echo "$n: $(docker logs --since 30s $n 2>&1 | wc -l) Zeilen"; done
-            echo
-            echo "=== nachher ==="
-            for n in vianu-server-api-1 vianu-server-worker-1 vianu-server-worker-production-1; do docker inspect -f '{{.Name}} {{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{end}}' $n; done
-            sizes
+            echo "=== Log-Größen in Byte, jetzt und nach 20 s ==="
+            sizes > /tmp/g1.txt; cat /tmp/g1.txt
+            sleep 20
+            sizes > /tmp/g2.txt
+            paste -d' ' /tmp/g1.txt /tmp/g2.txt | awk '{print $1, "Zuwachs:", $4-$2, "Byte in 20 s"}'
+            rm -f /tmp/g1.txt /tmp/g2.txt
