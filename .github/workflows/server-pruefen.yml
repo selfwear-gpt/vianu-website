@@ -1,15 +1,10 @@
-name: Server prüfen (Images und Logs)
+name: Postgres prüfen (nur lesen)
 
-# Nur von Hand startbar. Standard: nur lesen (Docker-Images, Container, Journal, Rechte des Deploy-Benutzers).
-# Mit "journal_begrenzen" setzt der Lauf zusätzlich die Obergrenze des Journals auf 200 MB und löscht ältere Einträge.
-# Das Repo ist öffentlich, die Logs auch: Registry-Adressen werden entfernt, Logs nach dem Lesen löschen.
+# Nur von Hand startbar, ändert nichts. Liest Zustand, Neustartgrund und gefilterte Fehlerzeilen des
+# Postgres-Containers. Das Repo ist öffentlich, die Logs auch: Zeilen werden gefiltert und geschwärzt,
+# der Lauf wird nach dem Lesen gelöscht.
 on:
   workflow_dispatch:
-    inputs:
-      journal_begrenzen:
-        description: "Journal auf höchstens 200 MB begrenzen (braucht sudo ohne Passwort)"
-        type: boolean
-        default: false
 
 concurrency:
   group: server-pflege
@@ -19,60 +14,31 @@ jobs:
   pruefen:
     runs-on: ubuntu-latest
     steps:
-      - name: Server prüfen
+      - name: Postgres lesen
         uses: appleboy/ssh-action@v1.2.0
-        env:
-          JOURNAL_BEGRENZEN: ${{ inputs.journal_begrenzen }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: JOURNAL_BEGRENZEN
           script: |
-            strip() { sed -E 's#(^|[ \t])[a-zA-Z0-9.-]+\.[a-z]{2,}(:[0-9]+)?/#\1#g'; }
-            echo "=== Platte ==="
-            df -h / | tail -1
+            C=$(docker ps -aq --filter name=postgres | head -1)
+            red() { sed -E 's/(user|role|database) "[^"]*"/\1 "***"/g; s/[0-9]{1,3}(\.[0-9]{1,3}){3}/x.x.x.x/g; s/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/***@***/g'; }
+            echo "=== Platte ==="; df -h / | tail -1
             echo
-            echo "=== Images (alle, nach Größe) ==="
-            docker images -a --format '{{.Size}}\t{{.Repository}}:{{.Tag}}\t{{.CreatedSince}}\t{{.ID}}' 2>&1 | strip | sort -hr
+            echo "=== Zustand ==="
+            docker inspect -f 'Status={{.State.Status}} Exit={{.State.ExitCode}} OOM={{.State.OOMKilled}} Neustarts={{.RestartCount}} Policy={{.HostConfig.RestartPolicy.Name}}' $C
+            docker inspect -f 'Gestartet={{.State.StartedAt}} Beendet={{.State.FinishedAt}} Fehler={{.State.Error}}' $C | red
+            docker inspect -f 'Image={{.Config.Image}}' $C | sed -E 's#[^ =]*/##'
             echo
-            echo "=== Ungenutzte Images (kein Container) ==="
-            used=$(docker ps -a --format '{{.Image}}' | sort -u)
-            docker images --format '{{.Repository}}:{{.Tag}}' | strip | while read i; do echo "$used" | strip | grep -qxF "$i" || echo "ungenutzt: $i"; done
-            echo "dangling: $(docker images -f dangling=true -q | wc -l)"
+            echo "=== Mounts ==="
+            docker inspect -f '{{range .Mounts}}{{.Type}} {{.Destination}}{{"\n"}}{{end}}' $C
+            V=$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/var/lib/postgresql/data"}}{{.Source}}{{end}}{{end}}' $C)
+            [ -z "$V" ] && V=$(docker inspect -f '{{range .Mounts}}{{if eq .Type "volume"}}{{.Source}}{{end}}{{end}}' $C)
+            echo "Datenordner-Größe: $(sudo -n du -sh "$V" 2>&1 | cut -f1)"
+            echo "PG_VERSION im Datenordner: $(sudo -n cat "$V/PG_VERSION" 2>&1 | head -1)"
             echo
-            echo "=== Container ==="
-            docker ps -a --format '{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Size}}' 2>&1 | strip
+            echo "=== Fehlerzeilen der letzten 2000 Logzeilen (gefiltert, gezählt) ==="
+            docker logs --tail 2000 $C 2>&1 | grep -E 'FATAL|ERROR|PANIC|HINT|DETAIL|could not|permission|No space|corrupt|incompatible|initdb|lock file|invalid|database system|exited|shut' | red | cut -c1-190 | sed -E 's/^[0-9: .-]*(UTC)? *//' | sort | uniq -c | sort -rn | head -15
             echo
-            echo "=== Größte Schichten des größten Images ==="
-            big=$(docker images --format '{{.ID}}' | head -1)
-            docker history --format '{{.Size}}\t{{.CreatedBy}}' "$(docker images --format '{{.Size}} {{.ID}}' | sort -hr | head -1 | cut -d' ' -f2)" 2>&1 | cut -c1-110 | sort -hr | head -8
-            echo
-            echo "=== Docker-Log-Einstellung ==="
-            cat /etc/docker/daemon.json 2>/dev/null | head -20 || echo "keine daemon.json lesbar"
-            docker inspect --format '{{.Name}}: {{.HostConfig.LogConfig.Type}} {{json .HostConfig.LogConfig.Config}}' $(docker ps -aq) 2>&1 | head -10
-            echo
-            echo "=== Docker-Verzeichnis und Container-Logs (mit sudo, nur Größen) ==="
-            sudo -n du -xh --max-depth=1 /var/lib/docker 2>&1 | sort -hr | head -6
-            sudo -n sh -c 'du -sh /var/lib/docker/containers/*/*-json.log 2>/dev/null' | sort -hr | head -6 | sed -E 's#/var/lib/docker/containers/([a-f0-9]{6})[a-f0-9]*/#\1 #'
-            for c in $(docker ps -aq); do docker inspect -f '{{.Name}} restarts={{.RestartCount}} exit={{.State.ExitCode}}' $c; done 2>&1 | grep -v 'restarts=0 exit=0'
-            echo
-            echo "=== /var/log (nur Größen) ==="
-            sudo -n du -xh --max-depth=1 /var/log 2>&1 | sort -hr | head -6
-            echo
-            echo "=== Journal ==="
-            sudo -n journalctl --disk-usage 2>&1
-            journalctl --disk-usage 2>&1
-            ls /etc/systemd/journald.conf.d 2>/dev/null; grep -hE '^(SystemMaxUse|SystemKeepFree|MaxRetentionSec)' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null || echo "keine Grenze gesetzt"
-            echo
-            echo "=== Rechte ==="
-            (sudo -n true 2>/dev/null && echo "sudo ohne Passwort: ja") || echo "sudo ohne Passwort für beliebige Befehle: nein"
-            if [ "$JOURNAL_BEGRENZEN" = "true" ]; then
-              echo
-              echo "=== Journal begrenzen ==="
-              printf '[Journal]\nSystemMaxUse=200M\n' | sudo -n tee /etc/systemd/journald.conf.d/00-groesse.conf >/dev/null 2>&1 || { sudo -n mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nSystemMaxUse=200M\n' | sudo -n tee /etc/systemd/journald.conf.d/00-groesse.conf >/dev/null; } 2>&1
-              sudo -n systemctl restart systemd-journald 2>&1
-              sudo -n journalctl --vacuum-size=200M 2>&1 | tail -2
-              journalctl --disk-usage 2>&1
-              df -h / | tail -1
-            fi
+            echo "=== Lauschende Ports (nur Nummern) ==="
+            ss -ltnH 2>/dev/null | awk '{print $4}' | sed 's/.*://' | sort -un | tr '\n' ' '; echo
