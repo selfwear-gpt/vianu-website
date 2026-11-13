@@ -248,7 +248,16 @@
     var knopf = wurzel.querySelector("[data-mail-kopieren]");
     var box = wurzel.querySelector("[data-mail-text]");
     var status = wurzel.querySelector("[data-mail-status]");
+    var oeffnen = wurzel.querySelector("[data-mail-offnen]");
     if (!knopf || !box || !status || !window.VianuTeilen) return;
+
+    // Der feste Link im HTML trägt den Platzhalter, hier kommt der echte Link zur Seite hinein
+    if (oeffnen) {
+      var platzhalter = window.VianuTexte.text("platzhalter.link", null, wurzel);
+      var ersatz = {};
+      ersatz[platzhalter] = new URL("b2b/", window.VianuTeilen.linkFuerKollegen(document.baseURI)).href;
+      oeffnen.href = window.VianuTeilen.mailtoFuerVorlage(box.textContent, ersatz);
+    }
 
     knopf.addEventListener("click", function () {
       var b2b = new URL("b2b/", window.VianuTeilen.linkFuerKollegen(document.baseURI)).href;

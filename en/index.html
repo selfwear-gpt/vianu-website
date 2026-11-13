@@ -44,6 +44,7 @@
 <script src="../assets/js/roddy.js" defer></script>
 <script src="../assets/js/werte.js" defer></script>
 <script src="../assets/js/spuren.js" defer></script>
+<script src="../assets/js/autoplay.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -221,8 +222,8 @@
       <a class="menue__logo" href="#" aria-label="VIANU, to the home page">VIANU</a>
 
       <a class="menue__perspektive menue__perspektive--leiste" href="b2b/">
-        <span>Change of perspective</span>
-        <small>For the decision-makers</small>
+        <span>For companies</span>
+        <small>Pilot for your business</small>
       </a>
 
       <nav class="menue__nav" id="menue-nav" aria-label="Main menu" data-menue-nav data-offen="false">
@@ -231,18 +232,12 @@
           <li><a href="#ablauf">How it works</a></li>
           <li><a href="#fragen">Questions</a></li>
         </ul>
-        <div class="menue__nav-extra">
-          <a class="menue__perspektive" href="b2b/">
-            <span>Change of perspective</span>
-            <small>For the decision-makers</small>
-          </a>
-        </div>
       </nav>
 
       <div class="menue__rechts">
         <div class="teilen" data-teilen>
-          <button class="teilen__knopf" type="button" aria-expanded="false" aria-controls="teilen-panel" data-teilen-knopf>
-            Share
+          <button class="teilen__knopf" type="button" aria-expanded="false" aria-controls="teilen-panel" aria-label="Share" data-teilen-knopf>
+            <span class="teilen__text">Share</span>
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 8v4h8V8M7 9V1M4 4l3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
           <div class="teilen__panel" id="teilen-panel" role="group" aria-label="Share" hidden>
@@ -259,7 +254,7 @@
           <a href="../" lang="de" hreflang="de" aria-label="German version">DE</a>
           <span aria-current="true" lang="en">EN</span>
         </div>
-        <button class="menue__knopf" type="button" aria-expanded="false" aria-controls="menue-nav" data-menue-knopf>Menu</button>
+        <button class="menue__knopf" type="button" aria-expanded="false" aria-controls="menue-nav" aria-label="Menu" data-menue-knopf><span class="menue__knopf-text">Menu</span></button>
       </div>
     </div>
   </div>
@@ -648,6 +643,7 @@
             </button>
           </li>
         </ol>
+        <p class="ablauf__handy-cta"><button class="knopf" type="button" data-teilen-oeffnen>Ask your employer</button></p>
         <div class="ablauf__bild">
           <div class="handy-huelle">
           <svg class="handy" viewBox="0 0 200 380" aria-hidden="true" focusable="false">
@@ -817,7 +813,7 @@ Kind regards
 [Your name]</div>
           <div class="mail__aktionen">
             <button class="knopf" type="button" data-mail-kopieren>Copy text</button>
-            <a class="textlink" href="../assets/downloads/mail-to-employer.txt" download>Download as file</a>
+            <a class="textlink" href="mailto:?subject=Question%20about%20insoles%20for%20our%20team&amp;body=Hello%2C%0D%0A%0D%0AI%20have%20read%20up%20on%20the%20VIANU%20program.%20It%20is%20aimed%20at%20teams%20that%20spend%20a%20lot%20of%20their%20working%20day%20standing%20and%20walking.%20Their%20solution%20is%20personalized%20insoles%2C%20printed%20for%20example%20with%20our%20logo%20and%20the%20employee's%20name.%0D%0A%0D%0AA%20pilot%20with%2010%20employees%20costs%20EUR%201%2C200%20plus%20VAT%2C%20and%20taking%20part%20is%20voluntary.%0D%0A%0D%0AI%20would%20be%20glad%20if%20you%20took%20a%20look%20and%20considered%20it.%20Here%20is%20the%20information%3A%0D%0A%0D%0A%5BLink%20to%20the%20page%5D%0D%0A%0D%0AI%20look%20forward%20to%20a%20short%20reply%20%3A)%0D%0A%0D%0AKind%20regards%0D%0A%5BYour%20name%5D" data-mail-offnen>Open in your email app</a>
           </div>
           <p class="teilen__status" role="status" aria-live="polite" data-mail-status></p>
         </div>
@@ -835,7 +831,7 @@ Kind regards
         <a class="textlink textlink--hell" href="impressum.html">Legal notice</a>
         <a class="textlink textlink--hell" href="datenschutz.html">Privacy</a>
       </nav>
-      <a class="textlink textlink--hell" href="b2b/">For decision-makers</a>
+      <a class="textlink textlink--hell" href="b2b/">For companies</a>
     </div>
   </div>
 </footer>

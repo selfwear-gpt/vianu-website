@@ -176,7 +176,7 @@
     function fertig() {
       if (gezeigt >= n) { wurzel.classList.add("chat--fertig"); wurzel.classList.remove("chat--hinweis"); wurzel.dispatchEvent(new CustomEvent("chat:zustand")); }
     }
-    // Hinweis "Scrollen für die nächste Nachricht": erst nach 3 Sekunden ohne Scrollen, Klick oder Tippen, solange der Chat im Bild ist.
+    // Hinweis "Scrollen für die nächste Nachricht": erst nach 2 Sekunden ohne Scrollen, Klick oder Tippen, solange der Chat im Bild ist.
     var hinweisZeit = null;
     function aktivitaet() {
       wurzel.classList.remove("chat--hinweis");
@@ -186,7 +186,7 @@
         if (gezeigt >= n || laeuft || !wurzel.getClientRects().length) return;
         var r = wurzel.getBoundingClientRect(), vh = window.innerHeight || document.documentElement.clientHeight;
         if (r.top < vh * 0.7 && r.bottom > vh * 0.3) wurzel.classList.add("chat--hinweis");
-      }, 3000);
+      }, 2000);
     }
     function zeigeNaechste() {
       if (gezeigt >= ziel) { laeuft = false; fertig(); return; }

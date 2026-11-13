@@ -29,7 +29,7 @@
       }
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
-      var erstes = dialog.querySelector("input, select, textarea, [data-hubspot-laden]");
+      var erstes = dialog.querySelector("input, select, textarea");
       if (erstes) erstes.focus();
     }
     function schliesse() {

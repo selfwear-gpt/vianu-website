@@ -1,6 +1,6 @@
 /*
-  Prüfung der Pilotanfrage. Schnittstelle: pruefeAnfrage(daten, sprache) -> { ok, fehler }, anfrageAlsText(daten, sprache), ROLLEN, QUELLEN, quelleName(id, sprache), emailGueltig(wert), mitarbeitendeGueltig(wert, minimum), unternehmenGueltig(wert), stundenGueltig(wert), BRANCHEN, brancheName(id, sprache).
-  Reine Funktionen ohne Browserbezug. Versand gibt es noch nicht: Die Seite meldet nur "Tool zur Erfassung fehlt noch.".
+  Prüfung der Pilotanfrage. Schnittstelle: pruefeAnfrage(daten, sprache) -> { ok, fehler }, anfrageAlsText(daten, sprache), hubspotNutzlast(daten, kontext), pruefeKontakt(daten, sprache), kontaktNutzlast(daten, kontext), FIRMENGROESSEN, SCHRITTE_KONTAKT, ROLLEN, QUELLEN, quelleName(id, sprache), emailGueltig(wert), mitarbeitendeGueltig(wert, minimum), unternehmenGueltig(wert), stundenGueltig(wert), BRANCHEN, brancheName(id, sprache).
+  Reine Funktionen ohne Browserbezug. hubspotNutzlast baut aus einer gültigen Anfrage die Daten für HubSpot, verschickt wird in versand.js.
 */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory(require("./texte.js"));
@@ -145,5 +145,78 @@
     ].join("\n");
   }
 
-  return { pruefeAnfrage: pruefeAnfrage, anfrageAlsText: anfrageAlsText, ROLLEN: ROLLEN, QUELLEN: QUELLEN, BRANCHEN: BRANCHEN, stundenGueltig: stundenGueltig, brancheName: brancheName, quelleName: quelleName, emailGueltig: emailGueltig, mitarbeitendeGueltig: mitarbeitendeGueltig, unternehmenGueltig: unternehmenGueltig };
+  // Firmengrößen: interne Werte der HubSpot-Eigenschaft companysize (gleich den sichtbaren Texten)
+  var FIRMENGROESSEN = ["<50", "51 - 100", "101 - 250", "251 +"];
+
+  // Kontaktformular im Popup: welche Felder in welchem Schritt stehen (ADR 0005)
+  var SCHRITTE_KONTAKT = [
+    ["anliegen"],
+    ["branche", "firmengroesse"],
+    ["unternehmen", "rolle", "stadt"],
+    ["quelle", "freitext"],
+    ["vorname", "nachname", "kontakt", "einwilligung"]
+  ];
+
+  function text(wert) { return String(wert == null ? "" : wert).trim(); }
+
+  // Pflicht: Firmengröße, Firma, Weg der Aufmerksamkeit, Vorname, Nachname, E-Mail, Einwilligung. Der Rest ist freiwillig,
+  // muss aber eine bekannte Auswahl sein bzw. darf nicht zu lang sein.
+  function pruefeKontakt(daten, sprache) {
+    function t(k, w) { return texte.text(k, w, sprache || "de"); }
+    var fehler = {};
+    var anliegen = text(daten.anliegen);
+    if (anliegen.length > MAX_FREITEXT) fehler.anliegen = t("formular.anliegen", { max: MAX_FREITEXT });
+    if (text(daten.branche) && !brancheName(text(daten.branche))) fehler.branche = t("formular.branche");
+    if (FIRMENGROESSEN.indexOf(text(daten.firmengroesse)) < 0) fehler.firmengroesse = t("formular.firmengroesse");
+    var name = text(daten.unternehmen);
+    if (!name) fehler.unternehmen = t("formular.unternehmen.leer");
+    else if (name.length > MAX_NAME) fehler.unternehmen = t("formular.unternehmen.lang", { max: MAX_NAME });
+    if (text(daten.rolle) && !rolleName(text(daten.rolle))) fehler.rolle = t("formular.rolle");
+    if (text(daten.stadt).length > MAX_NAME) fehler.stadt = t("formular.stadt", { max: MAX_NAME });
+    if (!quelleName(text(daten.quelle))) fehler.quelle = t("formular.quelle");
+    if (text(daten.freitext).length > MAX_FREITEXT) fehler.freitext = t("formular.freitext", { max: MAX_FREITEXT });
+    var vorname = text(daten.vorname);
+    if (!vorname || vorname.length > MAX_NAME) fehler.vorname = t("formular.vorname", { max: MAX_NAME });
+    var nachname = text(daten.nachname);
+    if (!nachname || nachname.length > MAX_NAME) fehler.nachname = t("formular.nachname", { max: MAX_NAME });
+    if (!emailGueltig(daten.kontakt)) fehler.kontakt = t("formular.email");
+    if (daten.einwilligung !== true) fehler.einwilligung = t("formular.einwilligung");
+    return { ok: Object.keys(fehler).length === 0, fehler: fehler };
+  }
+
+  // Die internen Namen der Eigenschaften in HubSpot (ADR 0004 und 0005). Die Stadt gehört zum Unternehmen (Objekt 0-2), alles andere zum Kontakt (0-1).
+  // Gesendet wird die Kennung (z. B. "personal"), nicht der sichtbare Text, damit DE und EN gleich ankommen.
+  var HUBSPOT = [
+    ["email", "kontakt"], ["firma", "unternehmen"], ["vianu_mitarbeitende", "mitarbeitende"], ["vianu_rolle", "rolle"],
+    ["vianu_stunden", "stunden"], ["vianu_branche", "branche"], ["vianu_quelle", "quelle"], ["vianu_quelle_text", "freitext"], ["message", "anliegen"],
+    ["firstname", "vorname"], ["lastname", "nachname"], ["companysize", "firmengroesse"], ["city", "stadt", "0-2"]
+  ];
+
+  // Mitgeschickt wird nur die Einwilligung zur Verarbeitung der Anfrage, keine Zustimmung zu Werbe-Mails.
+  // Leere Felder fehlen in der Nutzlast.
+  function nutzlast(daten, kontext) {
+    var k = kontext || {};
+    var felder = [];
+    HUBSPOT.forEach(function (p) {
+      var wert = text(daten[p[1]]);
+      if (wert) felder.push({ objectTypeId: p[2] || "0-1", name: p[0], value: wert });
+    });
+    // Sprache der Seite, damit VIANU in der Sprache der Anfrage antworten kann (Eigenschaft vianu_sprache)
+    if (k.sprache === "de" || k.sprache === "en") felder.push({ objectTypeId: "0-1", name: "vianu_sprache", value: k.sprache });
+    return {
+      fields: felder,
+      context: { pageUri: k.seite || "", pageName: k.titel || "" },
+      legalConsentOptions: { consent: { consentToProcess: true, text: k.einwilligungText || "" } }
+    };
+  }
+
+  // kontext: { seite, titel, einwilligungText, sprache }. Ohne gültige Anfrage gibt es nichts zu senden (null).
+  function hubspotNutzlast(daten, kontext) {
+    return pruefeAnfrage(daten).ok ? nutzlast(daten, kontext) : null;
+  }
+  function kontaktNutzlast(daten, kontext) {
+    return pruefeKontakt(daten).ok ? nutzlast(daten, kontext) : null;
+  }
+
+  return { pruefeAnfrage: pruefeAnfrage, hubspotNutzlast: hubspotNutzlast, pruefeKontakt: pruefeKontakt, kontaktNutzlast: kontaktNutzlast, FIRMENGROESSEN: FIRMENGROESSEN, SCHRITTE_KONTAKT: SCHRITTE_KONTAKT, anfrageAlsText: anfrageAlsText, ROLLEN: ROLLEN, QUELLEN: QUELLEN, BRANCHEN: BRANCHEN, stundenGueltig: stundenGueltig, brancheName: brancheName, quelleName: quelleName, emailGueltig: emailGueltig, mitarbeitendeGueltig: mitarbeitendeGueltig, unternehmenGueltig: unternehmenGueltig };
 });

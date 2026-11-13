@@ -49,4 +49,5 @@
   --seite-rand: clamp(16px, 4vw, 48px);
   --menue-hoehe: 64px;
   --kante: 2px;
+  --tippflaeche: 2.75rem;        /* kleinste Höhe und Breite eines Bedienelements auf dem Handy (44 px) */
 }

@@ -44,6 +44,7 @@
 <script src="assets/js/roddy.js" defer></script>
 <script src="assets/js/werte.js" defer></script>
 <script src="assets/js/spuren.js" defer></script>
+<script src="assets/js/autoplay.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -221,8 +222,8 @@
       <a class="menue__logo" href="#" aria-label="VIANU, zur Startseite">VIANU</a>
 
       <a class="menue__perspektive menue__perspektive--leiste" href="b2b/">
-        <span>Perspektivwechsel</span>
-        <small>Für die Entscheider-Etage</small>
+        <span>Für Unternehmen</span>
+        <small>Pilot für Ihren Betrieb</small>
       </a>
 
       <nav class="menue__nav" id="menue-nav" aria-label="Hauptmenü" data-menue-nav data-offen="false">
@@ -231,18 +232,12 @@
           <li><a href="#ablauf">So läuft es ab</a></li>
           <li><a href="#fragen">Fragen</a></li>
         </ul>
-        <div class="menue__nav-extra">
-          <a class="menue__perspektive" href="b2b/">
-            <span>Perspektivwechsel</span>
-            <small>Für die Entscheider-Etage</small>
-          </a>
-        </div>
       </nav>
 
       <div class="menue__rechts">
         <div class="teilen" data-teilen>
-          <button class="teilen__knopf" type="button" aria-expanded="false" aria-controls="teilen-panel" data-teilen-knopf>
-            Teilen
+          <button class="teilen__knopf" type="button" aria-expanded="false" aria-controls="teilen-panel" aria-label="Teilen" data-teilen-knopf>
+            <span class="teilen__text">Teilen</span>
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 8v4h8V8M7 9V1M4 4l3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
           <div class="teilen__panel" id="teilen-panel" role="group" aria-label="Teilen" hidden>
@@ -259,7 +254,7 @@
           <span aria-current="true" lang="de">DE</span>
           <a href="en/" lang="en" hreflang="en" aria-label="English version">EN</a>
         </div>
-        <button class="menue__knopf" type="button" aria-expanded="false" aria-controls="menue-nav" data-menue-knopf>Menü</button>
+        <button class="menue__knopf" type="button" aria-expanded="false" aria-controls="menue-nav" aria-label="Menü" data-menue-knopf><span class="menue__knopf-text">Menü</span></button>
       </div>
     </div>
   </div>
@@ -648,6 +643,7 @@
             </button>
           </li>
         </ol>
+        <p class="ablauf__handy-cta"><button class="knopf" type="button" data-teilen-oeffnen>Arbeitgeber anfragen</button></p>
         <div class="ablauf__bild">
           <div class="handy-huelle">
           <svg class="handy" viewBox="0 0 200 380" aria-hidden="true" focusable="false">
@@ -817,7 +813,7 @@ Freundliche Grüße
 [Ihr Name]</div>
           <div class="mail__aktionen">
             <button class="knopf" type="button" data-mail-kopieren>Text kopieren</button>
-            <a class="textlink" href="assets/downloads/mail-an-arbeitgeber.txt" download>Als Datei laden</a>
+            <a class="textlink" href="mailto:?subject=Frage%20zu%20Einlegesohlen%20f%C3%BCr%20unser%20Team&amp;body=Guten%20Tag%2C%0D%0A%0D%0Aich%20habe%20mich%20%C3%BCber%20das%20Programm%20von%20VIANU%20informiert.%20Es%20richtet%20sich%20an%20Teams%2C%20die%20w%C3%A4hrend%20der%20Arbeit%20viel%20stehen%20und%20gehen.%20Ihre%20L%C3%B6sung%20sind%20personalisierte%20Einlegesohlen%2C%20die%20z.%20B.%20unser%20Logo%20und%20den%20Namen%20des%20Mitarbeiters%20aufgedruckt%20haben.%0D%0A%0D%0AEin%20Pilot%20mit%2010%20Mitarbeitenden%20kostet%201.200%20Euro%20zzgl.%20Umsatzsteuer%2C%20die%20Teilnahme%20ist%20freiwillig.%0D%0A%0D%0AIch%20w%C3%BCrde%20mich%20freuen%2C%20wenn%20Sie%20sich%20das%20ansehen%20und%20das%20Ganze%20in%20Erw%C3%A4gung%20ziehen.%20Hier%20finden%20Sie%20die%20Informationen%20dazu%3A%0D%0A%0D%0A%5BLink%20zur%20Seite%5D%0D%0A%0D%0A%C3%9Cber%20eine%20kurze%20R%C3%BCckmeldung%20freue%20ich%20mich%20%3A)%0D%0A%0D%0AFreundliche%20Gr%C3%BC%C3%9Fe%0D%0A%5BIhr%20Name%5D" data-mail-offnen>In Mailprogramm öffnen</a>
           </div>
           <p class="teilen__status" role="status" aria-live="polite" data-mail-status></p>
         </div>
@@ -835,7 +831,7 @@ Freundliche Grüße
         <a class="textlink textlink--hell" href="impressum.html">Impressum</a>
         <a class="textlink textlink--hell" href="datenschutz.html">Datenschutz</a>
       </nav>
-      <a class="textlink textlink--hell" href="b2b/">Für Entscheiderinnen und Entscheider</a>
+      <a class="textlink textlink--hell" href="b2b/">Für Unternehmen</a>
     </div>
   </div>
 </footer>

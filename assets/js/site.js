@@ -15,8 +15,12 @@
     var auswahlKnopf = wurzel.querySelector("[data-auswahl-knopf]");
     var panel = auswahlKnopf ? document.getElementById(auswahlKnopf.getAttribute("aria-controls")) : null;
 
+    // Auf dem Handy (bis 62rem) ist "Wer entscheidet mit?" eine Überschrift, die Rollen darunter stehen immer offen.
+    var handy = window.matchMedia ? window.matchMedia("(max-width: 62rem)") : null;
     function setzeAuswahl(offen) {
       if (!auswahlKnopf || !panel) return;
+      if (handy && handy.matches) offen = true;
+      auswahlKnopf.disabled = !!(handy && handy.matches);
       auswahlKnopf.setAttribute("aria-expanded", offen ? "true" : "false");
       panel.hidden = !offen;
     }
@@ -28,6 +32,7 @@
 
     setzeAuswahl(false);
     setzeMenue(false);
+    if (handy && handy.addEventListener) handy.addEventListener("change", function () { setzeAuswahl(false); });
 
     knopf.addEventListener("click", function () {
       setzeMenue(knopf.getAttribute("aria-expanded") !== "true");
@@ -70,7 +75,22 @@
     });
   }
 
+  // Hinweis am i-Knopf (Rechenweg): Hover und Fokus zeigen ihn per CSS, auf Touchgeräten öffnet und schließt ihn das Tippen.
+  function initInfo() {
+    document.addEventListener("click", function (e) {
+      var knopf = e.target.closest ? e.target.closest(".info__knopf") : null;
+      Array.prototype.forEach.call(document.querySelectorAll(".info[data-offen]"), function (i) {
+        if (!knopf || i !== knopf.parentNode) i.removeAttribute("data-offen");
+      });
+      if (!knopf) return;
+      var hulle = knopf.parentNode;
+      if (hulle.hasAttribute("data-offen")) hulle.removeAttribute("data-offen");
+      else hulle.setAttribute("data-offen", "");
+    });
+  }
+
   function start() {
+    initInfo();
     Array.prototype.forEach.call(document.querySelectorAll("[data-menue]"), initMenue);
   }
 

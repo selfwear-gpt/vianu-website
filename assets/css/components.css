@@ -119,24 +119,114 @@ button.menue__cta { border: 0; font-family: var(--schrift-mono); cursor: pointer
   text-transform: uppercase;
   cursor: pointer;
 }
+/*
+  Handy und Tablet bis 62rem: Die Kopfzeile ist ein Raster in einer Zeile: Logo, Bereichsknopf (Wechsel zwischen
+  Mitarbeitenden und Unternehmen), Hauptaktion (Kontakt aufnehmen bzw. Teilen) als Symbol, Menüknopf als Symbol
+  und ganz rechts der Sprachumschalter. .menue__rechts löst sich auf (display: contents), damit die Teile einzeln liegen.
+  Das aufgeklappte B2B-Menü zeigt "Wer entscheidet mit?" mit den fünf Rollen direkt antippbar, danach die Sprungziele.
+  Im Mitarbeitenden-Bereich entfällt das Menü auf dem Handy (siehe unten).
+*/
+.menue__cta-symbol { display: none; }
 @media (max-width: 62rem) {
-  .menue__innen { flex-wrap: wrap; }
-  .menue__logo { padding-right: var(--abstand-4); }
-  .menue__knopf { display: flex; }
-  .menue__rechts { order: 2; }
-  .menue__rechts .menue__zurueck, .menue__rechts .sprache { display: none; }
-  .menue__nav { order: 3; flex: 0 0 100%; border-top: 1px solid var(--farbe-tinte); flex-direction: column; }
+  .menue .behaelter { padding-inline: 0; }
+  .menue__innen {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-rows: minmax(var(--menue-hoehe), auto);
+    align-items: stretch;
+  }
+  .menue__logo { grid-area: 1 / 1; padding: 0 var(--abstand-2) 0 var(--seite-rand); font-size: 1.3rem; }
+  .menue__rechts { display: contents; }
+  .menue__rechts .menue__zurueck,
+  .menue .menue__perspektive--leiste {
+    grid-area: 1 / 2;
+    justify-self: center;
+    min-height: var(--tippflaeche);
+    margin-block: var(--abstand-2);
+    gap: var(--abstand-1);
+    padding: 0 var(--abstand-2);
+    border: var(--kante) solid var(--farbe-tinte);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    align-self: center;
+  }
+  .menue__cta, .teilen { grid-area: 1 / 3; }
+  .menue__cta { justify-content: center; min-width: var(--tippflaeche); padding: 0 11px; }
+  .menue__cta-text, .menue__knopf-text, .teilen__text { display: none; }
+  .menue__cta-symbol { display: block; flex: none; }
+  .menue__knopf { grid-area: 1 / 4; display: flex; justify-content: center; min-width: var(--tippflaeche); padding: 0 11px; }
+  .menue__knopf::before {
+    content: "";
+    width: 20px;
+    height: 14px;
+    background:
+      linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat;
+  }
+  .menue__knopf[aria-expanded="true"]::before {
+    height: 18px;
+    background:
+      linear-gradient(to top right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px)),
+      linear-gradient(to bottom right, transparent calc(50% - 1px), currentColor calc(50% - 1px), currentColor calc(50% + 1px), transparent calc(50% + 1px));
+  }
+  .menue__rechts .sprache { grid-area: 1 / 5; display: flex; gap: 0; padding: 0 var(--abstand-3) 0 var(--abstand-1); border-left: 0; }
+  .sprache a, .sprache span { display: flex; align-items: center; justify-content: center; min-width: 2.2rem; min-height: var(--tippflaeche); padding: 0; border-bottom: 0; font-size: 0.75rem; }
+  .sprache [aria-current="true"] { font-weight: 700; border-bottom: 0; text-decoration: underline; text-decoration-thickness: var(--kante); text-underline-offset: 0.3em; }
+  .sprache a:hover { border-bottom: 0; text-decoration: underline; text-decoration-thickness: var(--kante); text-underline-offset: 0.3em; }
+  .menue__nav {
+    grid-area: 2 / 1 / 3 / -1;
+    flex-direction: column;
+    border-top: var(--kante) solid var(--farbe-tinte);
+    max-height: calc(100vh - var(--menue-hoehe));
+    max-height: calc(100dvh - var(--menue-hoehe));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .js .menue__nav[data-offen="false"] { display: none; }
   .menue__liste { flex-direction: column; width: 100%; }
   .menue__liste > li { flex-direction: column; border-top: 1px solid var(--farbe-linie); }
   .menue__liste > li:first-child { border-top: 0; }
-  .menue__liste a, .menue__auswahl-knopf { min-height: 3rem; width: 100%; justify-content: space-between; }
-  .menue__panel { position: static; width: 100%; max-width: none; border: 0; border-top: 1px solid var(--farbe-linie); background: var(--farbe-papier); }
-  .menue__nav-extra { display: flex; border-top: 1px solid var(--farbe-tinte); }
-  .menue__nav-extra a { flex: 1; min-height: 3rem; border-left: 0; padding-inline: var(--abstand-4); }
+  .menue__liste > li:has(.menue__auswahl-knopf) { order: -1; border-top: 0; }
+  .menue__liste > li:has(.menue__auswahl-knopf) + li, .menue__liste > li:has(.menue__auswahl-knopf) ~ li { border-top-color: var(--farbe-tinte); }
+  .menue__liste a, .menue__auswahl-knopf {
+    min-height: 3.75rem;
+    width: 100%;
+    padding: 0 var(--seite-rand);
+    justify-content: space-between;
+    font-family: var(--schrift-kopf);
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-align: left;
+  }
+  .menue__liste > li > a::after {
+    content: "";
+    flex: none;
+    width: 0.5em;
+    height: 0.5em;
+    border-top: var(--kante) solid currentColor;
+    border-right: var(--kante) solid currentColor;
+    transform: rotate(45deg);
+  }
+  /* "Wer entscheidet mit?" ist hier eine Überschrift, die Rollen darunter stehen offen */
+  .menue__auswahl-knopf, .menue__auswahl-knopf:hover { background: var(--farbe-tinte); color: var(--farbe-papier); cursor: default; }
+  .menue__auswahl-knopf:disabled { color: var(--farbe-papier); }
+  .menue__auswahl-knopf .pfeil-unten { display: none; }
+  .menue__panel { position: static; width: 100%; max-width: none; border: 0; background: var(--farbe-papier); color: var(--farbe-tinte); }
+  .menue__panel a { display: block; min-height: 4.25rem; padding: var(--abstand-3) var(--seite-rand); font-family: var(--schrift-text); font-size: 1.0625rem; font-weight: 400; letter-spacing: 0; line-height: 1.3; }
+  .menue__panel a::after { content: none; }
+  .menue__panel strong { margin-bottom: var(--abstand-1); font-size: 0.78rem; }
+  .menue__panel span { color: var(--farbe-gedaempft); }
+  .menue__panel a[aria-current="page"] { background: var(--farbe-signal); color: var(--farbe-auf-signal); }
+  .menue__panel a[aria-current="page"] span { color: inherit; }
 }
-@media (min-width: 62.0625rem) {
-  .menue__nav-extra { display: none; }
+@media (max-width: 24rem) {
+  .menue__rechts .menue__zurueck svg { display: none; }
+  .menue__logo { padding-right: 0; }
 }
 /* ---------- Hero ---------- */
 .hero { padding-block: clamp(40px, 8vw, 96px); overflow-x: clip; }
@@ -255,7 +345,7 @@ a.fuss__logo { color: inherit; text-decoration: none; }
 .menue--mitarbeitende { background: var(--farbe-tinte); color: var(--farbe-papier); border-bottom: 0; }
 .menue--mitarbeitende .menue__liste a { color: var(--farbe-papier); }
 .menue--mitarbeitende .menue__liste a:hover { background: var(--farbe-signal); color: var(--farbe-auf-signal); }
-.menue--mitarbeitende .sprache { border-left: 1px solid var(--farbe-papier); }
+.menue--mitarbeitende .sprache { border-left: 0; }
 .menue--mitarbeitende .sprache [aria-current="true"] { border-bottom-color: var(--farbe-signal); }
 .menue--mitarbeitende .sprache a:hover { border-bottom-color: var(--farbe-signal); }
 .menue--mitarbeitende .menue__knopf { background: var(--farbe-papier); color: var(--farbe-tinte); }
@@ -278,7 +368,6 @@ a.fuss__logo { color: inherit; text-decoration: none; }
 }
 .menue__perspektive small { font-size: 0.8rem; }
 .menue__perspektive:hover { background: var(--farbe-papier); }
-.menue__nav-extra .menue__perspektive { min-height: 3.25rem; width: 100%; }
 .menue--mitarbeitende .menue__nav { padding-left: var(--abstand-4); }
 /* ---------- Teilen ---------- */
 .teilen { position: relative; display: none; }
@@ -339,14 +428,16 @@ a.fuss__logo { color: inherit; text-decoration: none; }
 }
 @media (max-width: 62rem) {
   .teilen { position: static; }
-  .teilen__knopf { min-height: var(--menue-hoehe); padding: 0 var(--abstand-4); }
-  .teilen__panel { top: 100%; left: 0; right: 0; width: auto; max-width: none; }
-  .menue--mitarbeitende .menue__nav { padding-left: 0; }
-  .menue__perspektive--leiste { display: none; }
-  .menue--mitarbeitende .menue__liste a:hover { background: var(--farbe-signal); }
-}
-@media (min-width: 62.0625rem) {
-  .menue--mitarbeitende .menue__nav-extra { display: none; }
+  .teilen__knopf { min-height: var(--menue-hoehe); min-width: var(--tippflaeche); justify-content: center; padding: 0 11px; }
+  .teilen__knopf svg { width: 20px; height: 20px; }
+  .teilen__panel { top: 100%; left: 0; right: 0; width: auto; max-width: none; max-height: calc(100vh - var(--menue-hoehe)); max-height: calc(100dvh - var(--menue-hoehe)); overflow-y: auto; }
+  /* Mitarbeitenden-Bereich: kein Menü auf dem Handy, die Sprünge entfallen. Bereichsknopf, Teilen und Sprache bleiben. */
+  .menue--mitarbeitende .menue__knopf, .menue--mitarbeitende .menue__nav { display: none; }
+  .menue--mitarbeitende .teilen { grid-column: 3 / 5; justify-self: end; }
+  .menue .menue__perspektive--leiste small { display: none; }
+  .menue--mitarbeitende .menue__perspektive--leiste { justify-self: start; background: none; border-color: var(--farbe-papier); color: var(--farbe-papier); padding: 0 var(--abstand-2); }
+  .menue .menue__perspektive--leiste span { font-size: 0.75rem; line-height: 1.2; letter-spacing: 0.04em; }
+  .menue--mitarbeitende .menue__perspektive--leiste:hover { background: var(--farbe-signal); border-color: var(--farbe-signal); color: var(--farbe-auf-signal); }
 }
 /* ---------- Hero Start ---------- */
 .hero--start { position: relative; padding-bottom: clamp(88px, 12vw, 150px); }
@@ -723,7 +814,7 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
   .messwert__hinten { transform: none; opacity: 0; transition: opacity 0.2s; }
   .messwert--dreh:hover .messwert__hinten, .messwert--dreh:focus-within .messwert__hinten { opacity: 1; }
 }
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
   .messwert--dreh { min-height: 0; }
   .messwert__innen { transform: none !important; display: flex; flex-direction: column; }
   .messwert__vorn, .messwert__hinten { position: static; transform: none; backface-visibility: visible; border-bottom: 0; }
@@ -812,7 +903,7 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
   .sorge__hinten { transform: none; opacity: 0; }
   .sorge:hover .sorge__hinten, .sorge:focus-visible .sorge__hinten, .sorge[data-aktiv="true"] .sorge__hinten { opacity: 1; }
 }
-@media (max-width: 56rem) {
+@media (max-width: 56rem), (hover: none) and (pointer: coarse) {
   .sorgen__mini { display: block; position: sticky; top: var(--menue-hoehe); z-index: 4; padding: var(--abstand-3) 0; background: var(--farbe-papier); border-bottom: 1px solid var(--farbe-tinte); margin-bottom: var(--abstand-4); }
   .sorgen__fuss { display: flex; flex-direction: column; gap: var(--abstand-4); aspect-ratio: auto; background: none; clip-path: none; }
   .sorgen__eintrag, .sorgen__eintrag--1, .sorgen__eintrag--4 { display: block; height: auto; align-self: auto; border-radius: 0; }
@@ -1322,6 +1413,8 @@ div.weg { display: flex; flex-direction: column; gap: var(--abstand-5); }
 .schicht__text p.boden__hinweis { font-family: var(--schrift-kopf); font-weight: 800; font-size: clamp(1.5rem, 3vw, 2.25rem); line-height: 1.05; text-transform: uppercase; max-width: 22ch; }
 .strecke { display: flex; flex-direction: column; gap: var(--abstand-5); max-width: 32rem; }
 .strecke__schritt { display: flex; flex-direction: column; align-items: flex-start; gap: var(--abstand-3); }
+/* Fallenfeld gegen Bots: für Menschen unsichtbar und nicht per Tab erreichbar */
+.strecke__falle { position: absolute; left: -100vw; width: 1px; height: 1px; overflow: hidden; }
 .strecke__ende { display: flex; flex-direction: column; align-items: flex-start; gap: var(--abstand-4); }
 .geschichte__kapitel[data-boden] .schicht__raster { align-items: start; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
 .geschichte__kapitel[data-boden] .schicht__bild { position: sticky; top: calc(var(--menue-hoehe) + var(--abstand-4)); order: -1; }
@@ -1348,7 +1441,7 @@ div.weg { display: flex; flex-direction: column; gap: var(--abstand-5); }
   .dreh__hinten { transform: none; opacity: 0; transition: opacity 0.2s; }
   .dreh:hover .dreh__hinten, .dreh:focus-within .dreh__hinten { opacity: 1; }
 }
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
   .dreh__innen { display: flex; flex-direction: column; transform: none !important; }
   .dreh__vorn, .dreh__hinten { transform: none; opacity: 1; backface-visibility: visible; }
   .dreh__vorn { border-bottom: 0; }
@@ -1567,7 +1660,7 @@ details.beleg[open] { border-left: 10px solid var(--farbe-signal); }
 
 /* ---------- Chat-Brief ---------- */
 .chat { --schritte: 8; --chat-hoehe: min(38rem, calc(100svh - var(--menue-hoehe) - var(--abstand-6))); position: relative; }
-.chat--aktiv { height: calc(var(--chat-hoehe) + var(--schritte) * 14rem); }
+.chat--aktiv { height: calc(var(--chat-hoehe) + var(--schritte) * var(--chat-schritt, 14rem)); }
 .chat--aktiv.chat--ohnescroll { height: auto; }
 .chat--aktiv.chat--ohnescroll .chat__buehne { position: static; height: var(--chat-hoehe); }
 .chat__buehne { max-width: 25rem; margin-inline: auto; }
@@ -1884,9 +1977,6 @@ img.chat__avatar { object-fit: cover; object-position: center; border: var(--kan
 @media (prefers-reduced-motion: reduce) { .ergebnis__marke, .ergebnis__kasten { transition: none; } }
 
 /* ---------- Einkauf: Sprungleiste und ausgearbeitete Punkte mit Symbol ---------- */
-.sprung { display: flex; flex-wrap: wrap; gap: var(--abstand-2); margin: var(--abstand-5) 0; }
-.sprung__link { padding: 0.4rem 0.9rem; border: var(--kante) solid var(--farbe-tinte); border-radius: 2rem; font-family: var(--schrift-mono); font-size: var(--schrift-groesse-etikett); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--farbe-tinte); }
-.sprung__link:hover, .sprung__link:focus-visible { background: var(--farbe-tinte); color: var(--farbe-papier); }
 .punkte { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: var(--abstand-4); margin: 0; padding: 0; list-style: none; }
 .punkt { display: flex; gap: var(--abstand-4); align-items: flex-start; padding: var(--abstand-5); border: var(--kante) solid var(--farbe-tinte); background: var(--farbe-papier); transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s; }
 .punkt:hover { transform: translateY(-3px); background: var(--farbe-signal); box-shadow: 0 4px 0 var(--farbe-tinte); }
@@ -2109,7 +2199,7 @@ img.chat__avatar { object-fit: cover; object-position: center; border: var(--kan
 .stimme__rolle { position: absolute; top: var(--abstand-3); left: var(--abstand-5); color: var(--farbe-gedaempft); }
 @media (max-width: 56rem) { .stimmenpaar { grid-template-columns: minmax(0, 1fr); gap: var(--abstand-5); } }
 /* Sprunglink zum Inhalt: nur bei Tastaturfokus sichtbar */
-.sprung { position: absolute; left: var(--abstand-3); top: -4rem; z-index: 100; padding: var(--abstand-2) var(--abstand-4); background: var(--farbe-tinte); color: var(--farbe-papier); font-weight: 700; }
+.sprung { position: absolute; left: var(--abstand-3); top: -10rem; z-index: 100; padding: var(--abstand-2) var(--abstand-4); background: var(--farbe-tinte); color: var(--farbe-papier); font-weight: 700; }
 .sprung:focus { top: var(--abstand-3); }
 main:focus { outline: none; }
 /* Klickflächen von mindestens 24 px bei kleinen Bedienelementen */
@@ -2205,11 +2295,19 @@ main:focus { outline: none; }
 .foto--zwei-sohlen { --ausschnitt: 50% 50%; }
 
 /* Kontaktformular von HubSpot: Hinweis mit Knopf, das Formular selbst lädt erst nach dem Klick */
-.hubspot { display: flex; flex-direction: column; gap: var(--abstand-4); }
-.hubspot__vorab { display: flex; flex-direction: column; align-items: flex-start; gap: var(--abstand-4); }
-.hubspot__vorab[hidden] { display: none; }
-.hubspot__vorab p { margin: 0; }
-.hubspot .formular__status:empty { display: none; }
+/* ---------- Kontaktformular im Popup in Schritten (kontakt.js) ---------- */
+.kontakt { display: flex; flex-direction: column; gap: var(--abstand-4); }
+.kontakt__schritt { display: flex; flex-direction: column; gap: var(--abstand-4); }
+.kontakt__fortschritt { display: flex; flex-direction: column; gap: var(--abstand-2); }
+.kontakt__balken { height: 0.5rem; border: 2px solid var(--farbe-tinte); }
+.kontakt__fuellung { display: block; height: 100%; width: calc(var(--anteil, 0.2) * 100%); background: var(--farbe-signal); transition: width 0.2s ease-out; }
+.kontakt__frei { font-weight: 400; font-size: var(--schrift-groesse-klein); }
+.kontakt__knoepfe { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--abstand-3); }
+.kontakt__knoepfe .knopf { margin-left: auto; }
+.kontakt__zurueck { background: none; border: 0; padding: 0; cursor: pointer; }
+.kontakt .formular__status:empty { display: none; }
+.kontakt__dank { display: flex; flex-direction: column; gap: var(--abstand-3); }
+@media (prefers-reduced-motion: reduce) { .kontakt__fuellung { transition: none; } }
 
 /* Rechtstexte: Unterüberschriften, Absätze und Adressen in Impressum und Datenschutz */
 .recht h3 { margin-top: var(--abstand-6); font-size: var(--schrift-groesse-text); }
@@ -2220,3 +2318,76 @@ main:focus { outline: none; }
 .recht p.etikett { margin-top: var(--abstand-6); }
 .recht .recht__aussagen li { max-width: 66ch; }
 .recht__adresse { font-style: normal; }
+
+/* ---------- Handy-Feinschliff (bis 40rem) ----------
+   Gleiche Inhalte, andere Ordnung: Bedienelemente mit mindestens 44 px, kürzere Scrollwege, ruhigere Bühnen.
+   Alles Weitere steht bei den Bausteinen. Der Ruhezustand (reduzierte Bewegung, Druck) bleibt unverändert. */
+@media (max-width: 40rem) {
+  .knopf, .umfrage__antwort, .dokument__knopf { min-height: var(--tippflaeche); }
+  .rechner__eingabe { height: var(--tippflaeche); }
+  .chat__icon { width: var(--tippflaeche); height: var(--tippflaeche); }
+  .textlink, .fuss__recht a, .fuss a { position: relative; display: inline-flex; align-items: center; min-height: var(--tippflaeche); }
+  .textlink { min-height: 0; display: inline-block; }
+  .textlink::after { content: ""; position: absolute; inset: -14px -6px; }
+  .fuss__recht { gap: 0 var(--abstand-5); }
+  .sorgen__punkt::after { inset: -15px; }
+  .info__knopf::after { inset: -1.1rem; }
+  .sorgen__punkte { gap: var(--abstand-4); }
+
+  /* Chat: kürzere Strecke je Nachricht */
+  .chat { --chat-schritt: 9rem; }
+  .chat__hinweis { font-size: 0.75rem; }
+  /* Schichttag: Momente rücken zusammen */
+  .tag__moment { min-height: 26vh; }
+  /* Roddys Weg: Hochformat nutzt die Breite, der Fuß wird schmal */
+  .roddy__stage { grid-template-columns: minmax(0, 1fr) 3.25rem; gap: var(--abstand-3); }
+  .roddy__szene { align-content: start; }
+  .roddy__bild { aspect-ratio: 4 / 5; max-width: none; }
+  /* Matte und Sohle: die Schritte stehen alle da, der aktuelle ist hervorgehoben */
+  .js .weg__schritte li[data-aus] { opacity: 0.35; transform: none; }
+  /* Programmblock: drei schmale Reiterzeilen statt großer Kacheln, damit der Inhalt gleich darunter beginnt */
+  .reise:not(.reise--termin) .reise__reiter { gap: var(--abstand-2); }
+  .reise:not(.reise--termin) .reise__tab { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "nr wann" "nr titel"; column-gap: var(--abstand-3); row-gap: 0; padding: var(--abstand-2) var(--abstand-4); min-height: 4rem; }
+  .reise:not(.reise--termin) .reise__tab .ico { display: none; }
+  .reise:not(.reise--termin) .reise__nr { font-size: 2rem; }
+  .reise:not(.reise--termin) .reise__tab strong { font-size: 1.3rem; }
+  /* Programmblock: alle drei Teile stehen untereinander, nichts wird durchgeklickt */
+  .reise:not(.reise--termin) .reise__reiter { display: none; }
+  .reise:not(.reise--termin) .reise__feld[hidden] { display: flex !important; }
+  /* Roderichs Weg und So funktioniert´s: alle Stationen untereinander, ohne Leiste und ohne Weiter/Zurück */
+  .weg__leiste, .weg__steuerung [data-weg-zurueck], .weg__steuerung [data-weg-weiter] { display: none; }
+  .weg__feld[hidden] { display: grid !important; }
+  .weg__steuerung [data-weg-pilot][hidden] { display: inline-flex !important; }
+  .weg__feld + .weg__feld { margin-top: 0; padding-top: var(--abstand-6); border-top: var(--kante) solid var(--farbe-signal); }
+  .weg__feld { padding-bottom: var(--abstand-6); }
+  .weg__buehne { padding-bottom: var(--abstand-2); }
+  .weg__steuerung { margin-top: var(--abstand-5); }
+  /* Pilot-Popup als Blatt vom unteren Rand */
+  .dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92dvh; border-width: var(--kante) 0 0; box-shadow: none; }
+  .kontaktwahl { width: 100%; }
+  .formular__feld input[type="text"], .formular__feld input[type="email"], .formular__feld select { min-height: var(--tippflaeche); }
+  .teilen__aktion { min-height: 3.25rem; font-size: 1.0625rem; }
+  .teilen__panel { padding: var(--abstand-4) var(--seite-rand) var(--abstand-5); }
+}
+
+/* Alles in einer Sohle: Auf Handy und Tablet stehen die Beschreibungen offen, sie hängen nicht an Tippen oder Hover.
+   Ein hängengebliebenes Hover nach dem Tippen klappt keine andere Karte zu. */
+@media (max-width: 75rem) {
+  .werte .wert__text { grid-template-rows: 1fr !important; }
+  .werte .wert__text p { opacity: 1 !important; padding-top: var(--abstand-2) !important; }
+}
+.info[data-offen] .info__text { visibility: visible; opacity: 1; }
+
+/* Ablauf mit Telefonbild: Auf dem Handy entfällt das Bild mit Bedienung. Die Schritte stehen als Liste untereinander,
+   alle Texte stehen im HTML. Klein starten: alle Stufen untereinander mit voller Deckkraft. */
+.ablauf__handy-cta { display: none; margin: 0; }
+@media (max-width: 56rem) {
+  .ablauf__bild { display: none; }
+  .ablauf__handy-cta { display: block; margin-top: var(--abstand-5); }
+  .ablauf__liste .ablauf__schritt, .ablauf__liste .ablauf__schritt:hover, .ablauf__liste .ablauf__schritt[aria-pressed] { background: var(--farbe-papier); color: var(--farbe-tinte); cursor: default; pointer-events: none; }
+  .ablauf__liste .ablauf__schritt[aria-pressed] .ablauf__bahn, .ablauf__liste .ablauf__schritt:hover .ablauf__bahn { background: var(--farbe-tinte); color: var(--farbe-papier); }
+}
+@media (hover: none), (max-width: 40rem) {
+  .klein__stufe, .klein__stufe[data-aktiv="false"] { opacity: 1; }
+  .klein .klein__punkt--s1, .klein .klein__punkt--s2 { opacity: 1 !important; }
+}

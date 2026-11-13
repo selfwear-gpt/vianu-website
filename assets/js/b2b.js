@@ -291,7 +291,7 @@
     var punkte = wurzel.querySelectorAll("[data-sorgen-punkt]");
     var liste = wurzel.querySelector("[data-sorgen-liste]");
     if (!kacheln.length || !liste || !window.VianuFortschritt) return;
-    var handy = window.matchMedia("(max-width: 56rem)");
+    var handy = window.matchMedia("(max-width: 56rem), (hover: none) and (pointer: coarse)");
 
     function setzeAktiv(i) {
       Array.prototype.forEach.call(kacheln, function (k, n) { k.setAttribute("data-aktiv", n === i ? "true" : "false"); });
@@ -483,6 +483,8 @@
     if (schritte.length !== 5 || weiter.length !== 4 || !ende || !absenden) return;
     var kapitel = wurzel.closest("[data-boden]");
     var erreicht = 1;
+    var falle = wurzel.querySelector("[data-falle]");
+    var gesendet = false;
 
     var gueltig = [
       function () { return F.mitarbeitendeGueltig(felder.mitarbeitende.value, 10); },
@@ -517,8 +519,8 @@
       ende.hidden = erreicht < 5;
       wurzel.dispatchEvent(new CustomEvent("strecke-schritt", { bubbles: true, detail: { schritt: erreicht } }));
       var fertig = erreicht === 5 && gueltig.every(function (g) { return g(); }) && F.pruefeAnfrage(daten(), window.VianuTexte.sprache(wurzel)).ok;
-      absenden.disabled = !fertig;
-      if (!fertig && status) status.textContent = "";
+      absenden.disabled = !fertig || gesendet;
+      if (!fertig && !gesendet && status) status.textContent = "";
     }
     function vor(i) {
       if (!gueltig[i]()) return;
@@ -541,15 +543,35 @@
       var i = Number(e.target.closest("[data-frage]").getAttribute("data-frage")) - 1;
       if (i < weiter.length && !weiter[i].hidden) vor(i);
     });
+    // Absenden: erst jetzt geht etwas an HubSpot (versand.js). Füllt jemand das unsichtbare Fallenfeld aus, ist es ein Bot:
+    // Er sieht dieselbe Dankmeldung, gesendet wird nichts.
+    function melde(schluessel) { if (status) status.textContent = window.VianuTexte.text(schluessel, null, wurzel); }
     wurzel.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (absenden.disabled || !F.pruefeAnfrage(daten(), window.VianuTexte.sprache(wurzel)).ok) return;
-      if (status) status.textContent = window.VianuTexte.text("formular.versand", null, wurzel);
+      if (gesendet || absenden.disabled || !F.pruefeAnfrage(daten(), window.VianuTexte.sprache(wurzel)).ok) return;
+      if (falle && falle.value) { gesendet = true; absenden.disabled = true; melde("strecke.gesendet"); return; }
+      var einwilligung = felder.einwilligung.labels && felder.einwilligung.labels[0];
+      var nutzlast = F.hubspotNutzlast(daten(), {
+        seite: window.location.href.split("#")[0].split("?")[0],
+        titel: document.title,
+        sprache: window.VianuTexte.sprache(wurzel),
+        einwilligungText: einwilligung ? einwilligung.textContent.replace(/\s+/g, " ").trim() : ""
+      });
+      if (!nutzlast || !window.VianuVersand) { melde("strecke.fehler"); return; }
+      absenden.disabled = true;
+      melde("strecke.sendet");
+      window.VianuVersand.sende(nutzlast, "strecke").then(function (ok) {
+        if (ok) { gesendet = true; melde("strecke.gesendet"); return; }
+        absenden.disabled = false;
+        melde("strecke.fehler");
+      });
     });
     if (kapitel) {
       kapitel.addEventListener("boden-zurueck", function () {
         wurzel.reset();
         erreicht = 1;
+        gesendet = false;
+        if (status) status.textContent = "";
         aktualisiere();
       });
     }
