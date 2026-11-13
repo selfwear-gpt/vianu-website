@@ -1,0 +1,32 @@
+name: Server aufräumen (Build-Cache)
+
+# Nur von Hand startbar. Löscht ausschließlich den ungenutzten Docker-Build-Cache auf dem Server
+# (docker builder prune). Laufende Container, Images und Volumes bleiben unberührt.
+# Zeigt vorher und nachher die Plattenbelegung. Einmalige Aktion, wird danach wieder entfernt.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: server-pflege
+  cancel-in-progress: false
+
+jobs:
+  aufraeumen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build-Cache löschen
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            echo "=== vorher ==="
+            df -h / | tail -1
+            docker system df 2>&1 | grep -i "build cache"
+            echo
+            docker builder prune --all --force 2>&1 | tail -3
+            echo
+            echo "=== nachher ==="
+            df -h / | tail -1
+            docker system df 2>&1 | grep -i "build cache"
