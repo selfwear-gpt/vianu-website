@@ -1,0 +1,69 @@
+name: Server prüfen (Images und Logs)
+
+# Nur von Hand startbar. Standard: nur lesen (Docker-Images, Container, Journal, Rechte des Deploy-Benutzers).
+# Mit "journal_begrenzen" setzt der Lauf zusätzlich die Obergrenze des Journals auf 200 MB und löscht ältere Einträge.
+# Das Repo ist öffentlich, die Logs auch: Registry-Adressen werden entfernt, Logs nach dem Lesen löschen.
+on:
+  workflow_dispatch:
+    inputs:
+      journal_begrenzen:
+        description: "Journal auf höchstens 200 MB begrenzen (braucht sudo ohne Passwort)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: server-pflege
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Server prüfen
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          JOURNAL_BEGRENZEN: ${{ inputs.journal_begrenzen }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: JOURNAL_BEGRENZEN
+          script: |
+            strip() { sed -E 's#(^|[ \t])[a-zA-Z0-9.-]+\.[a-z]{2,}(:[0-9]+)?/#\1#g'; }
+            echo "=== Platte ==="
+            df -h / | tail -1
+            echo
+            echo "=== Images (alle, nach Größe) ==="
+            docker images -a --format '{{.Size}}\t{{.Repository}}:{{.Tag}}\t{{.CreatedSince}}\t{{.ID}}' 2>&1 | strip | sort -hr
+            echo
+            echo "=== Ungenutzte Images (kein Container) ==="
+            used=$(docker ps -a --format '{{.Image}}' | sort -u)
+            docker images --format '{{.Repository}}:{{.Tag}}' | strip | while read i; do echo "$used" | strip | grep -qxF "$i" || echo "ungenutzt: $i"; done
+            echo "dangling: $(docker images -f dangling=true -q | wc -l)"
+            echo
+            echo "=== Container ==="
+            docker ps -a --format '{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Size}}' 2>&1 | strip
+            echo
+            echo "=== Größte Schichten des größten Images ==="
+            big=$(docker images --format '{{.ID}}' | head -1)
+            docker history --format '{{.Size}}\t{{.CreatedBy}}' "$(docker images --format '{{.Size}} {{.ID}}' | sort -hr | head -1 | cut -d' ' -f2)" 2>&1 | cut -c1-110 | sort -hr | head -8
+            echo
+            echo "=== Docker-Log-Einstellung ==="
+            cat /etc/docker/daemon.json 2>/dev/null | head -20 || echo "keine daemon.json lesbar"
+            docker inspect --format '{{.Name}}: {{.HostConfig.LogConfig.Type}} {{json .HostConfig.LogConfig.Config}}' $(docker ps -aq) 2>&1 | head -10
+            echo
+            echo "=== Journal ==="
+            journalctl --disk-usage 2>&1
+            ls /etc/systemd/journald.conf.d 2>/dev/null; grep -hE '^(SystemMaxUse|SystemKeepFree|MaxRetentionSec)' /etc/systemd/journald.conf /etc/systemd/journald.conf.d/*.conf 2>/dev/null || echo "keine Grenze gesetzt"
+            echo
+            echo "=== Rechte ==="
+            (sudo -n true 2>/dev/null && echo "sudo ohne Passwort: ja") || echo "sudo ohne Passwort für beliebige Befehle: nein"
+            if [ "$JOURNAL_BEGRENZEN" = "true" ]; then
+              echo
+              echo "=== Journal begrenzen ==="
+              printf '[Journal]\nSystemMaxUse=200M\n' | sudo -n tee /etc/systemd/journald.conf.d/00-groesse.conf >/dev/null 2>&1 || { sudo -n mkdir -p /etc/systemd/journald.conf.d && printf '[Journal]\nSystemMaxUse=200M\n' | sudo -n tee /etc/systemd/journald.conf.d/00-groesse.conf >/dev/null; } 2>&1
+              sudo -n systemctl restart systemd-journald 2>&1
+              sudo -n journalctl --vacuum-size=200M 2>&1 | tail -2
+              journalctl --disk-usage 2>&1
+              df -h / | tail -1
+            fi
