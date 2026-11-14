@@ -1,9 +1,9 @@
 /*
-  Video startet beim Öffnen und Neuladen von selbst, stumm und in Schleife, aber nur auf Laptop und PC.
-  Schnittstelle: sollAutoplay(umgebung) mit { feinerZeiger, reduziert, datensparen }, quelleFuerGeraet({ schmal, grobZeiger,
+  Video startet beim Öffnen und Neuladen von selbst, stumm und in Schleife, auf Laptop, PC und Handy.
+  Schnittstelle: sollAutoplay(umgebung) mit { reduziert, datensparen }, quelleFuerGeraet({ schmal, grobZeiger,
   datensparen }) mit "klein" oder "gross", waehleQuelle(video), initAutoplay(video).
   Jedes Video hat eine große Fassung (source) und eine kleine (data-klein): Handy, Touchgeräte und Datensparmodus laden die kleine.
-  Handy, Tablet, reduzierte Bewegung und Datensparmodus behalten Vorschaubild und Startknopf. Ton schaltet die Person
+  Reduzierte Bewegung und Datensparmodus behalten Vorschaubild und Startknopf. Das Handy lädt die kleine Fassung. Ton schaltet die Person
   über die Steuerung des Videos ein. Aus dem Bild gescrollt pausiert das Video, außer die Person hat selbst pausiert.
 */
 (function (root, factory) {
@@ -25,7 +25,7 @@
 })(this, function () {
   function sollAutoplay(umgebung) {
     var u = umgebung || {};
-    return u.feinerZeiger === true && u.reduziert === false && u.datensparen === false;
+    return u.reduziert === false && u.datensparen === false;
   }
 
   function quelleFuerGeraet(umgebung) {
@@ -61,7 +61,6 @@
     var mq = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
     var verbindung = navigator.connection || {};
     return {
-      feinerZeiger: mq("(hover: hover) and (pointer: fine)"),
       reduziert: mq("(prefers-reduced-motion: reduce)"),
       datensparen: verbindung.saveData === true
     };

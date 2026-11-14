@@ -46,6 +46,7 @@
 <script src="../assets/js/werte.js" defer></script>
 <script src="../assets/js/spuren.js" defer></script>
 <script src="../assets/js/autoplay.js" defer></script>
+<script src="../assets/js/wischleiste.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -277,7 +278,7 @@
     <div class="behaelter">
       <div class="hero__raster">
         <div class="hero__text">
-          <h1 id="hero-titel">Walk lightly, smile brightly</h1>
+          <h1 id="hero-titel">Keep walkin’ strong the whole day long</h1>
           <p class="hero__slogan">Wear your favorite shoe for hours</p>
           <div class="hero__aktionen">
             <button class="knopf" type="button" data-teilen-oeffnen>Show it to your employer
@@ -303,18 +304,27 @@
       <h2 class="sr-nur" id="kurz-titel">In brief</h2>
       <ul class="kurz__liste">
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><path d="M8 36l3-10L30 7l7 7-19 19z"/><path d="M26 11l7 7"/></svg></span>
           <p>Insoles, <strong class="kurz__wort">custom-made</strong>, for teams that are on their feet for several hours.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><rect x="13" y="5" width="18" height="34" rx="3"/><path d="M19 33h6"/></svg></span>
           <p>You photograph your foot with your own <strong class="kurz__wort">smartphone</strong>.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><circle cx="22" cy="22" r="15"/><path d="M28 15a9 9 0 1 0 0 14M14 20h12M14 25h12"/></svg></span>
           <p>Your <strong class="kurz__wort">employer pays</strong> for the program.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><circle cx="22" cy="22" r="15"/><path d="M14 23l6 6 11-12"/></svg></span>
           <p>Taking part is <strong class="kurz__wort">voluntary</strong>. You decide.</p>
         </li>
       </ul>
+      <div class="kurz__steuerung">
+        <button class="kurz__pfeil" type="button" data-kurz-zurueck aria-label="Previous point"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="kurz__punkte" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <button class="kurz__pfeil" type="button" data-kurz-weiter aria-label="Next point"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
     </div>
   </section>
 
@@ -428,7 +438,7 @@
 
   <section class="abschnitt roddy" id="erlebt" aria-labelledby="erlebt-titel">
     <div class="behaelter">
-      <p class="leitsatz" id="erlebt-titel">Made by someone who lived the problem themselves</p>
+      <h2 class="leitsatz" id="erlebt-titel">Made by someone who lived the problem themselves</h2>
       <p class="etikett roddy__name">Roddy the Barista, founder of VIANU</p>
       <div class="roddy__haelt" data-roddy>
         <div class="roddy__stage">

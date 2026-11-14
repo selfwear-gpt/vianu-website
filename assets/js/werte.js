@@ -4,7 +4,8 @@
   überfahren oder die Karte per Tastatur fokussiert wird. Das Skript fügt zwei Dinge hinzu:
   1. Die ganze Sohle ist Trefferfläche: Fährt die Maus irgendwo über die Sohle, öffnet sich die Karte des nächstgelegenen Punkts (data-nah="true").
      Nähert sich die Maus einem Punkt auf der Mittelspalte, wächst er leicht (data-nah="punkt"). Es ist immer nur eine Karte offen.
-  2. Auf Touchgeräten klappt ein Tippen die Karte auf (data-fix), eine andere Karte oder ein zweites Tippen klappt sie wieder zu.
+  2. Auf Touchgeräten und auf dem Handy (schmaler als 40rem) klappt ein Tippen die Karte auf (data-fix), eine andere Karte oder ein
+     zweites Tippen klappt sie wieder zu. Auf dem Handy stehen die Karten zugeklappt mit einem Pfeil. Enter und Leertaste öffnen sie ebenfalls.
   Ohne Skript bleibt alles lesbar, die Karten öffnen dann per Hover und Fokus.
 */
 (function () {
@@ -14,13 +15,19 @@
     var karten = Array.prototype.slice.call(huelle.querySelectorAll("[data-wert]"));
     var mitte = huelle.querySelector(".werte__mitte");
 
+    function umschalten(k) {
+      var an = k.getAttribute("data-fix") !== "true";
+      karten.forEach(function (andere) { andere.removeAttribute("data-fix"); });
+      if (an) k.setAttribute("data-fix", "true");
+    }
+    // Mit Maus öffnet das Überfahren, nur auf Touchgeräten und auf dem Handy zählt das Tippen
+    function antippbar() { return window.matchMedia("(hover: none), (max-width: 40rem)").matches; }
     karten.forEach(function (k) {
-      k.addEventListener("click", function () {
-        // Mit Maus öffnet das Überfahren, nur auf Touchgeräten zählt das Tippen
-        if (!window.matchMedia("(hover: none)").matches) return;
-        var an = k.getAttribute("data-fix") !== "true";
-        karten.forEach(function (andere) { andere.removeAttribute("data-fix"); });
-        if (an) k.setAttribute("data-fix", "true");
+      k.addEventListener("click", function () { if (antippbar()) umschalten(k); });
+      k.addEventListener("keydown", function (e) {
+        if (e.target !== k || (e.key !== "Enter" && e.key !== " ") || !window.matchMedia("(max-width: 40rem)").matches) return;
+        e.preventDefault();
+        umschalten(k);
       });
     });
     if (!mitte) return;

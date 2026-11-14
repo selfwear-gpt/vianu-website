@@ -48,6 +48,7 @@
 <script src="../assets/js/kontakt.js" defer></script>
 <script src="../assets/js/studien.js" defer></script>
 <script src="../assets/js/autoplay.js" defer></script>
+<script src="../assets/js/wischleiste.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -259,7 +260,7 @@
       <div class="hero__raster">
         <div class="hero__text">
           <h1 id="hero-titel" lang="en">Keep walkin’ strong the whole day long</h1>
-          <p class="hero__slogan" lang="en">Nothing fancy. Just a great way to get through your day.</p>
+          <p class="hero__slogan" lang="en">Comfort that carries your people through every shift.</p>
           <a class="knopf" href="#pilot" data-pilot-oeffnen>Kontakt aufnehmen
             <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6h11M8 1.5L12.5 6 8 10.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
           </a>
@@ -281,18 +282,27 @@
       <h2 class="sr-nur" id="vertrauen-titel">Was für VIANU spricht</h2>
       <ul class="kurz__liste">
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><path d="M6 37V21l10 6v-6l10 6V13h9v24z"/><path d="M12 37v-5M20 37v-5M28 37v-5"/></svg></span>
           <p><strong class="kurz__wort">In Deutschland gefertigt</strong>, lokal 3D-gedruckt und in 48 Stunden fertig.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><circle cx="22" cy="22" r="15"/><path d="M22 12v10l7 5"/></svg></span>
           <p>Nach dem Fußscan ist die Einlegesohle spätestens nach <strong class="kurz__wort">7&nbsp;Tagen</strong> vor Ort.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><circle cx="15" cy="16" r="5"/><circle cx="30" cy="18" r="4"/><path d="M5 37c0-7 4-12 10-12s10 5 10 12M27 27c6-1 12 2 12 10"/></svg></span>
           <p>Ein <strong class="kurz__wort">Pilot&nbsp;mit&nbsp;10</strong> Mitarbeitenden kostet 1.200 Euro zzgl. Umsatzsteuer.</p>
         </li>
         <li class="kurz__punkt">
+          <span class="kurz__icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 44 44" focusable="false"><path d="M10 6h20l6 6v26H10z"/><path d="M16 18h14M16 24h14M16 30h8"/></svg></span>
           <p>Patente für das <strong class="kurz__wort">Vermessen</strong> durch Fotos (DE 10 2019 123 458 B4) und die <strong class="kurz__wort">Optimierung</strong> individuell gefertigter Bekleidung (EP 4 114 225 B1).</p>
         </li>
       </ul>
+      <div class="kurz__steuerung">
+        <button class="kurz__pfeil" type="button" data-kurz-zurueck aria-label="Vorheriger Punkt"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="kurz__punkte" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <button class="kurz__pfeil" type="button" data-kurz-weiter aria-label="Nächster Punkt"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
     </div>
   </section>
 
@@ -796,7 +806,7 @@
         <div class="reise__buehne">
           <div class="reise__feld" id="reise-feld-1" aria-labelledby="reise-tab-1" data-feld-nr="1">
             <h3>Die Unterlagen, mit denen Sie intern freigeben</h3>
-            <ul class="unterlagen"><li class="unterlagen__eintrag"><span>Vorlage für die Betriebsvereinbarung<span class="unterlagen__nutzen">Ausgangstext, den Sie mit Ihrem Betriebsrat verhandeln.</span></span><span class="unterlagen__rechts"><span class="etikett unterlagen__stand">PDF</span><a class="textlink textlink--hell" href="../assets/downloads/vorlage-betriebsvereinbarung.pdf" data-studie-datei="../assets/downloads/vorlage-betriebsvereinbarung.pdf" data-studie-name="vorlage-betriebsvereinbarung.pdf" data-studie-titel="Vorlage für die Betriebsvereinbarung">Herunterladen (PDF)</a></span></li><li class="unterlagen__eintrag"><span>Datenschutzkonzept<span class="unterlagen__nutzen">Zeigt, welche Daten bei der Fußerfassung entstehen.</span></span><span class="unterlagen__rechts"><span class="etikett unterlagen__stand">PDF</span><a class="textlink textlink--hell" href="../assets/downloads/datenschutzkonzept.pdf" data-studie-datei="../assets/downloads/datenschutzkonzept.pdf" data-studie-name="datenschutzkonzept.pdf" data-studie-titel="Datenschutzkonzept">Herunterladen (PDF)</a></span></li><li class="unterlagen__eintrag"><span>Auftragsverarbeitungsvertrag<span class="unterlagen__nutzen">Vertragsvorlage für Ihre Rechtsabteilung.</span></span><span class="unterlagen__rechts"><span class="etikett unterlagen__stand">PDF</span><a class="textlink textlink--hell" href="../assets/downloads/vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-datei="../assets/downloads/vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-name="vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-titel="Auftragsverarbeitungsvertrag">Herunterladen (PDF)</a></span></li></ul>
+            <ul class="unterlagen"><li class="unterlagen__eintrag"><span>Vorlage für die Betriebsvereinbarung<span class="unterlagen__nutzen">Ausgangstext, den Sie mit Ihrem Betriebsrat verhandeln.</span></span><span class="unterlagen__rechts"><a class="textlink textlink--hell" href="../assets/downloads/vorlage-betriebsvereinbarung.pdf" data-studie-datei="../assets/downloads/vorlage-betriebsvereinbarung.pdf" data-studie-name="vorlage-betriebsvereinbarung.pdf" data-studie-titel="Vorlage für die Betriebsvereinbarung">Herunterladen (PDF)</a></span></li><li class="unterlagen__eintrag"><span>Datenschutzkonzept<span class="unterlagen__nutzen">Zeigt, welche Daten bei der Fußerfassung entstehen.</span></span><span class="unterlagen__rechts"><a class="textlink textlink--hell" href="../assets/downloads/datenschutzkonzept.pdf" data-studie-datei="../assets/downloads/datenschutzkonzept.pdf" data-studie-name="datenschutzkonzept.pdf" data-studie-titel="Datenschutzkonzept">Herunterladen (PDF)</a></span></li><li class="unterlagen__eintrag"><span>Auftragsverarbeitungsvertrag<span class="unterlagen__nutzen">Vertragsvorlage für Ihre Rechtsabteilung.</span></span><span class="unterlagen__rechts"><a class="textlink textlink--hell" href="../assets/downloads/vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-datei="../assets/downloads/vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-name="vorlage-auftragsverarbeitungsvertrag.pdf" data-studie-titel="Auftragsverarbeitungsvertrag">Herunterladen (PDF)</a></span></li></ul>
           </div>
           <div class="reise__feld" id="reise-feld-2" aria-labelledby="reise-tab-2" data-feld-nr="2">
             <h3>Was im Betrieb passiert</h3>

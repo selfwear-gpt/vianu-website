@@ -442,7 +442,6 @@ a.fuss__logo { color: inherit; text-decoration: none; }
 /* ---------- Hero Start ---------- */
 .hero--start { position: relative; padding-bottom: clamp(88px, 12vw, 150px); }
 .hero--start .hero__raster { position: relative; z-index: 1; align-items: center; }
-.hero--start .hero__raster h1 { font-size: var(--schrift-groesse-display); max-width: 11ch; }
 .hero__aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--abstand-4) var(--abstand-6); }
 .hero__spuren {
   position: absolute;
@@ -797,7 +796,6 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
 .unterlagen { display: flex; flex-direction: column; border-top: 1px solid var(--farbe-tinte); }
 .unterlagen__eintrag { display: flex; align-items: center; justify-content: space-between; gap: var(--abstand-2); padding: var(--abstand-3) 0; border-bottom: 1px solid var(--farbe-tinte); font-size: var(--schrift-groesse-klein); }
 .unterlagen__eintrag span:first-child { min-width: 0; }
-.unterlagen__stand { flex: none; padding: 0.1rem 0.5rem; border: 1px dashed var(--farbe-gedaempft); color: var(--farbe-gedaempft); }
 @media (max-width: 56rem) {
   .zeit { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 3px solid var(--farbe-tinte); margin-left: 10px; }
 }
@@ -1205,8 +1203,7 @@ svg.weg { width: 100%; height: auto; max-height: 34rem; }
 .reise__feld > p { font-size: clamp(1.1rem, 1.9vw, 1.35rem); max-width: 44ch; }
 .reise__feld .unterlagen { border-top-color: var(--farbe-papier); }
 .reise__feld .unterlagen__eintrag { border-bottom-color: var(--farbe-papier); font-size: 1.1rem; }
-.reise__feld .unterlagen__stand { color: var(--farbe-papier); border-color: var(--farbe-papier); }
-.reise__feld .schritte3__punkt--offen { background: transparent; color: var(--farbe-papier); border-color: var(--farbe-papier); }
+.reise__feld .reise__feld .schritte3__punkt--offen { background: transparent; color: var(--farbe-papier); border-color: var(--farbe-papier); }
 @media (max-width: 56rem) {
   .reise__reiter { grid-template-columns: minmax(0, 1fr); }
   .reise__tab { grid-template-columns: auto 1fr; }
@@ -1613,8 +1610,7 @@ details.beleg[open] { border-left: 10px solid var(--farbe-signal); }
 /* Was Sie bekommen: Unterlagen mit Nutzen, Stand und Download */
 .unterlagen__nutzen { display: block; margin-top: var(--abstand-1); font-size: 0.9rem; font-weight: 400; max-width: 46ch; }
 .unterlagen__rechts { display: flex; flex-direction: column; align-items: flex-end; gap: var(--abstand-1); flex: none; }
-.reise__feld .unterlagen__stand { border-style: solid; }
-.reise__feld .schritte3__offen { margin: var(--abstand-4) 0 0; max-width: 60ch; }
+.reise__feld .reise__feld .schritte3__offen { margin: var(--abstand-4) 0 0; max-width: 60ch; }
 .reise__download { margin: 0; }
 .reise__feld .messwerte--flip { margin: 0; }
 .reise__cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--abstand-3) var(--abstand-5); }
@@ -2384,9 +2380,9 @@ main:focus { outline: none; }
   .teilen__panel { padding: var(--abstand-4) var(--seite-rand) var(--abstand-5); }
 }
 
-/* Alles in einer Sohle: Auf Handy und Tablet stehen die Beschreibungen offen, sie hängen nicht an Tippen oder Hover.
-   Ein hängengebliebenes Hover nach dem Tippen klappt keine andere Karte zu. */
-@media (max-width: 75rem) {
+/* Alles in einer Sohle: Auf Tablet stehen die Beschreibungen offen, sie hängen nicht an Tippen oder Hover.
+   Ein hängengebliebenes Hover nach dem Tippen klappt keine andere Karte zu. Auf dem Handy (bis 40rem) sind die Karten zugeklappt, siehe unten. */
+@media (min-width: 40.01rem) and (max-width: 75rem) {
   .werte .wert__text { grid-template-rows: 1fr !important; }
   .werte .wert__text p { opacity: 1 !important; padding-top: var(--abstand-2) !important; }
 }
@@ -2404,4 +2400,59 @@ main:focus { outline: none; }
 @media (hover: none), (max-width: 40rem) {
   .klein__stufe, .klein__stufe[data-aktiv="false"] { opacity: 1; }
   .klein .klein__punkt--s1, .klein .klein__punkt--s2 { opacity: 1 !important; }
+}
+
+/* ---------- Handy (bis 40rem): Kopf, Wischleiste, Karten, Erzählung. Laptop und Tablet bleiben wie sie sind. ---------- */
+.kurz__icon, .kurz__steuerung { display: none; }
+@media (max-width: 40rem) {
+  /* Kopf: Slogans, Knopf und Links stehen mittig, der Hauptslogan ist größer und läuft über mehrere Zeilen */
+  .hero__text { align-items: center; text-align: center; }
+  .hero__raster h1 { font-size: clamp(3.2rem, 15.5vw, 4.6rem); line-height: 0.95; max-width: 11ch; margin-inline: auto; text-wrap: balance; }
+  .hero__slogan { font-size: 1.3rem; max-width: 22ch; margin-inline: auto; }
+  .hero__aktionen { flex-direction: column; align-items: center; justify-content: center; }
+  .hero__aktionen .knopf { justify-content: center; }
+
+  /* Vier Kurzpunkte: Karten mit Symbol, seitlich wischbar, Pfeile und Punkte darunter */
+  .kurz { overflow-x: clip; padding-block: var(--abstand-5); }
+  .kurz .kurz__liste { display: flex; gap: var(--abstand-3); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-inline: calc(-1 * var(--seite-rand)); padding: var(--abstand-1) var(--seite-rand); scroll-padding-inline: var(--seite-rand); overscroll-behavior-x: contain; }
+  .kurz .kurz__liste::-webkit-scrollbar { display: none; }
+  .kurz .kurz__liste > .kurz__punkt:nth-child(n) { flex: 0 0 78%; scroll-snap-align: center; align-items: center; justify-content: center; gap: var(--abstand-3); padding: var(--abstand-5) var(--abstand-4); border: var(--kante) solid var(--farbe-tinte); background: var(--farbe-papier); text-align: center; }
+  .kurz .kurz__punkt p { text-align: center; max-width: none; }
+  .kurz__icon { display: grid; place-items: center; flex: none; width: 4rem; height: 4rem; border: var(--kante) solid var(--farbe-tinte); border-radius: 50%; background: var(--farbe-signal); color: var(--farbe-tinte); }
+  .kurz__icon svg { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .kurz__steuerung { display: flex; align-items: center; justify-content: center; gap: var(--abstand-4); margin-top: var(--abstand-4); }
+  .kurz__pfeil { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: var(--kante) solid var(--farbe-tinte); background: var(--farbe-signal); color: var(--farbe-tinte); cursor: pointer; }
+  .kurz__pfeil:disabled { background: var(--farbe-papier); opacity: 0.45; cursor: default; }
+  .kurz__punkte { display: flex; gap: 0.5rem; }
+  .kurz__punkte span { width: 0.6rem; height: 0.6rem; border: 2px solid var(--farbe-tinte); border-radius: 50%; }
+  .kurz__punkte span[data-aktiv="true"] { background: var(--farbe-tinte); }
+
+  /* Alles in einer Sohle: zugeklappt, mit Pfeil. Ein Tippen öffnet die Karte. */
+  .werte .wert .wert__text { grid-template-rows: 0fr; }
+  .werte .wert .wert__text p { opacity: 0; padding-top: 0; }
+  .werte .wert[data-fix="true"] .wert__text { grid-template-rows: 1fr; }
+  .werte .wert[data-fix="true"] .wert__text p { opacity: 1; padding-top: var(--abstand-2); }
+  .werte .wert:not([data-fix="true"]) .wert__karte { background: var(--farbe-papier); color: var(--farbe-tinte); }
+  .werte .wert__kopf::after { content: ""; flex: none; width: 0.7rem; height: 0.7rem; margin: 0 0.25rem 0.3rem auto; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; transform: rotate(45deg); transition: transform 0.3s, margin 0.3s; }
+  .werte .wert[data-fix="true"] .wert__kopf::after { margin-bottom: -0.2rem; transform: rotate(-135deg); }
+  .werte .wert__karte { padding-block: var(--abstand-4); }
+
+  /* Gemacht von jemand, der das Problem selbst erlebt hat: richtige Überschrift, Sprechblasen mit Abstand zum Bild */
+  .leitsatz { white-space: normal; font-size: clamp(2.2rem, 10vw, 3rem); line-height: 1; text-transform: uppercase; text-wrap: balance; }
+  .roddy__szene { gap: var(--abstand-6); }
+  .roddy__rede { gap: var(--abstand-3); }
+
+  /* B2B-Gründer: Foto, Bildunterschrift und Zitat mittig, danach mehr Luft */
+  .geschichte__person { width: min(100%, 16rem); justify-self: center; margin-inline: auto; align-items: center; text-align: center; }
+  .geschichte__foto { width: 100%; aspect-ratio: auto; min-height: 20rem; }
+  .geschichte__person .band__name { text-align: center; }
+  .geschichte__satz { text-align: center; }
+  .geschichte__kopf { padding-bottom: clamp(56px, 18vw, 88px); }
+  .geschichte__kapitel--weg { padding-top: clamp(56px, 16vw, 80px); }
+  /* Der Satz "Wir verkaufen ..." am Ende von Vom Start bis zur Sohle entfällt */
+  .geschichte__fazit { display: none; }
+
+  /* Kacheln, die sich auf dem Handy nicht umdrehen: Symbole und Texte mittig */
+  .messwert__vorn, .messwert__hinten, .studienkarte .dreh__vorn, .studienkarte .dreh__hinten { align-items: center; text-align: center; }
+  .messwert__bild { margin-inline: auto; }
 }
