@@ -1,6 +1,8 @@
 /*
   Video startet beim Öffnen und Neuladen von selbst, stumm und in Schleife, aber nur auf Laptop und PC.
-  Schnittstelle: sollAutoplay(umgebung) mit { feinerZeiger, reduziert, datensparen }, initAutoplay(video).
+  Schnittstelle: sollAutoplay(umgebung) mit { feinerZeiger, reduziert, datensparen }, quelleFuerGeraet({ schmal, grobZeiger,
+  datensparen }) mit "klein" oder "gross", waehleQuelle(video), initAutoplay(video).
+  Jedes Video hat eine große Fassung (source) und eine kleine (data-klein): Handy, Touchgeräte und Datensparmodus laden die kleine.
   Handy, Tablet, reduzierte Bewegung und Datensparmodus behalten Vorschaubild und Startknopf. Ton schaltet die Person
   über die Steuerung des Videos ein. Aus dem Bild gescrollt pausiert das Video, außer die Person hat selbst pausiert.
 */
@@ -11,7 +13,10 @@
     root.VianuAutoplay = api;
     if (root.document) {
       var start = function () {
-        Array.prototype.forEach.call(root.document.querySelectorAll("video.video__film"), api.initAutoplay);
+        Array.prototype.forEach.call(root.document.querySelectorAll("video.video__film"), function (video) {
+          api.waehleQuelle(video);
+          api.initAutoplay(video);
+        });
       };
       if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start);
       else start();
@@ -21,6 +26,35 @@
   function sollAutoplay(umgebung) {
     var u = umgebung || {};
     return u.feinerZeiger === true && u.reduziert === false && u.datensparen === false;
+  }
+
+  function quelleFuerGeraet(umgebung) {
+    var u = umgebung || {};
+    return u.schmal === true || u.grobZeiger === true || u.datensparen === true ? "klein" : "gross";
+  }
+
+  // Tauscht die große Fassung gegen die kleine, bevor das Video etwas lädt (preload="none" auf dem Handy)
+  function waehleQuelle(video) {
+    if (!video || !video.getAttribute) return;
+    var klein = video.getAttribute("data-klein");
+    var quelle = video.querySelector && video.querySelector("source");
+    if (!klein || !quelle) return;
+    var mq = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+    var verbindung = navigator.connection || {};
+    var wahl = quelleFuerGeraet({ schmal: mq("(max-width: 40rem)"), grobZeiger: mq("(pointer: coarse)"), datensparen: verbindung.saveData === true });
+    if (wahl !== "klein") return;
+    quelle.setAttribute("src", klein);
+    video.load();
+  }
+
+  // Startet erst nach dem Laden der Seite und im Leerlauf, damit das Video den Seitenaufbau nicht bremst
+  function spaeter(aufgabe) {
+    var los = function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(aufgabe, { timeout: 2000 });
+      else window.setTimeout(aufgabe, 300);
+    };
+    if (document.readyState === "complete") los();
+    else window.addEventListener("load", los, { once: true });
   }
 
   function umgebungAusBrowser() {
@@ -49,7 +83,7 @@
       if (!wirdVonUnsAngehalten && !video.ended) vomNutzerAngehalten = true;
     });
     video.addEventListener("play", function () { vomNutzerAngehalten = false; });
-    spiele();
+    spaeter(spiele);
 
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (eintraege) {
@@ -63,5 +97,5 @@
     }
   }
 
-  return { sollAutoplay: sollAutoplay, initAutoplay: initAutoplay };
+  return { sollAutoplay: sollAutoplay, quelleFuerGeraet: quelleFuerGeraet, waehleQuelle: waehleQuelle, initAutoplay: initAutoplay };
 });
