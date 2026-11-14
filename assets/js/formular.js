@@ -1,5 +1,5 @@
 /*
-  Prüfung der Pilotanfrage. Schnittstelle: pruefeAnfrage(daten, sprache) -> { ok, fehler }, anfrageAlsText(daten, sprache), hubspotNutzlast(daten, kontext), pruefeKontakt(daten, sprache), kontaktNutzlast(daten, kontext), FIRMENGROESSEN, SCHRITTE_KONTAKT, ROLLEN, QUELLEN, quelleName(id, sprache), emailGueltig(wert), mitarbeitendeGueltig(wert, minimum), unternehmenGueltig(wert), stundenGueltig(wert), BRANCHEN, brancheName(id, sprache).
+  Prüfung der Pilotanfrage. Schnittstelle: pruefeAnfrage(daten, sprache) -> { ok, fehler }, anfrageAlsText(daten, sprache), hubspotNutzlast(daten, kontext), downloadNutzlast(daten, kontext), pruefeKontakt(daten, sprache), kontaktNutzlast(daten, kontext), FIRMENGROESSEN, SCHRITTE_KONTAKT, ROLLEN, QUELLEN, quelleName(id, sprache), emailGueltig(wert), mitarbeitendeGueltig(wert, minimum), unternehmenGueltig(wert), stundenGueltig(wert), BRANCHEN, brancheName(id, sprache).
   Reine Funktionen ohne Browserbezug. hubspotNutzlast baut aus einer gültigen Anfrage die Daten für HubSpot, verschickt wird in versand.js.
 */
 (function (root, factory) {
@@ -218,5 +218,26 @@
     return pruefeKontakt(daten).ok ? nutzlast(daten, kontext) : null;
   }
 
-  return { pruefeAnfrage: pruefeAnfrage, hubspotNutzlast: hubspotNutzlast, pruefeKontakt: pruefeKontakt, kontaktNutzlast: kontaktNutzlast, FIRMENGROESSEN: FIRMENGROESSEN, SCHRITTE_KONTAKT: SCHRITTE_KONTAKT, anfrageAlsText: anfrageAlsText, ROLLEN: ROLLEN, QUELLEN: QUELLEN, BRANCHEN: BRANCHEN, stundenGueltig: stundenGueltig, brancheName: brancheName, quelleName: quelleName, emailGueltig: emailGueltig, mitarbeitendeGueltig: mitarbeitendeGueltig, unternehmenGueltig: unternehmenGueltig };
+  // Download-Popup (ADR 0006): E-Mail-Adresse und Kennung der geladenen Datei (zum Beispiel "vorlage-betriebsvereinbarung.pdf") gehen an das
+  // HubSpot-Formular "VIANU_Download_DE". Dazu Seite und Sprache der Seite (vianu_sprache) und der Text der Einwilligung, keine Zustimmung zu
+  // Werbe-Mails. daten: { kontakt, datei, einwilligung }, kontext: { seite, titel, einwilligungText, sprache }. Ohne gültige E-Mail, Datei
+  // und Einwilligung gibt es nichts zu senden (null).
+  function downloadNutzlast(daten, kontext) {
+    var datei = text(daten.datei);
+    if (!datei || !emailGueltig(daten.kontakt) || daten.einwilligung !== true) return null;
+    var k = kontext || {};
+    var felder = [
+      { objectTypeId: "0-1", name: "email", value: text(daten.kontakt) },
+      { objectTypeId: "0-1", name: "vianu_download_datei", value: datei }
+    ];
+    if (k.seite) felder.push({ objectTypeId: "0-1", name: "vianu_download_seite", value: k.seite });
+    if (k.sprache === "de" || k.sprache === "en") felder.push({ objectTypeId: "0-1", name: "vianu_sprache", value: k.sprache });
+    return {
+      fields: felder,
+      context: { pageUri: k.seite || "", pageName: k.titel || "" },
+      legalConsentOptions: { consent: { consentToProcess: true, text: k.einwilligungText || "" } }
+    };
+  }
+
+  return { pruefeAnfrage: pruefeAnfrage, hubspotNutzlast: hubspotNutzlast, downloadNutzlast: downloadNutzlast, pruefeKontakt: pruefeKontakt, kontaktNutzlast: kontaktNutzlast, FIRMENGROESSEN: FIRMENGROESSEN, SCHRITTE_KONTAKT: SCHRITTE_KONTAKT, anfrageAlsText: anfrageAlsText, ROLLEN: ROLLEN, QUELLEN: QUELLEN, BRANCHEN: BRANCHEN, stundenGueltig: stundenGueltig, brancheName: brancheName, quelleName: quelleName, emailGueltig: emailGueltig, mitarbeitendeGueltig: mitarbeitendeGueltig, unternehmenGueltig: unternehmenGueltig };
 });

@@ -532,12 +532,11 @@
   <section class="abschnitt" id="weiterleiten" aria-labelledby="weiterleiten-titel">
     <div class="behaelter">
       <div class="abschnitt__kopf">
-        <h2 id="weiterleiten-titel">An die nächste Person im Entscheidungsteam</h2>
-        <p>Jede Rolle hat eine eigene Seite. Diese Seite gibt es auch als Einseiter zum Weiterleiten.</p>
+        <h2 id="weiterleiten-titel">Diese Seite weitergeben</h2>
+        <p>Kopieren Sie den Link und schicken Sie ihn an die nächste Person im Entscheidungsteam.</p>
       </div>
       <div class="weiter" data-weiterleiten data-weiterleiten-diese-seite>
         <div class="weiter__aktionen">
-          <a class="knopf knopf--dunkel" href="../assets/downloads/rolle-personal.pdf" data-studie-datei="../assets/downloads/rolle-personal.pdf" data-studie-name="rolle-personal.pdf" data-studie-titel="Einseiter: Personal">Einseiter als PDF</a>
           <button class="knopf knopf--dunkel" type="button" data-weiterleiten-kopieren>Link zu dieser Seite kopieren</button>
           <a class="knopf" href="./#pilot" data-pilot-oeffnen>Kontakt aufnehmen
             <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6h11M8 1.5L12.5 6 8 10.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -545,13 +544,6 @@
         </div>
         <p class="weiter__status" role="status" data-weiterleiten-status></p>
         <input class="weiter__feld" type="text" readonly hidden aria-label="Link zu dieser Seite" data-weiterleiten-link>
-        <h3>Die anderen Rollen</h3>
-        <ul class="weiter__liste">
-          <li><a class="textlink" href="geschaeftsfuehrung.html">Geschäftsführung und Betrieb</a></li>
-          <li><a class="textlink" href="arbeitsschutz.html">Arbeitsschutz</a></li>
-          <li><a class="textlink" href="einkauf.html">Einkauf</a></li>
-          <li><a class="textlink" href="betriebsrat.html">Betriebsrat</a></li>
-        </ul>
       </div>
     </div>
   </section>
@@ -590,14 +582,14 @@
       </div>
       <div class="kontakt__schritt" data-schritt="1">
         <div class="formular__feld">
-          <label for="p-anliegen">Ihr Anliegen <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-anliegen">Ihr Anliegen</label>
           <textarea id="p-anliegen" name="anliegen" rows="3" maxlength="500" placeholder="Ich möchte mehr Infos erhalten für einen ersten möglichen Pilottest für 10 Mitarbeitende." data-feld="anliegen"></textarea>
           <p class="formular__fehler" data-fehler="anliegen" hidden></p>
         </div>
       </div>
       <div class="kontakt__schritt" data-schritt="2">
         <div class="formular__feld">
-          <label for="p-branche">Art der Tätigkeit <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-branche">Art der Tätigkeit</label>
           <select id="p-branche" name="branche" data-feld="branche">
             <option value="">Bitte wählen</option>
             <option value="hotel-gastronomie">Hotel und Gastronomie</option>
@@ -636,7 +628,7 @@
           <p class="formular__fehler" data-fehler="unternehmen" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-rolle">Ihre Rolle im Unternehmen <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-rolle">Ihre Rolle im Unternehmen</label>
           <select id="p-rolle" name="rolle" data-feld="rolle">
             <option value="">Bitte wählen</option>
             <option value="personal">Personal</option>
@@ -649,7 +641,7 @@
           <p class="formular__fehler" data-fehler="rolle" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-stadt">Stadt <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-stadt">Stadt</label>
           <input id="p-stadt" name="stadt" type="text" autocomplete="address-level2" maxlength="120" data-feld="stadt">
           <p class="formular__fehler" data-fehler="stadt" hidden></p>
         </div>
@@ -671,7 +663,7 @@
           <p class="formular__fehler" data-fehler="quelle" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-freitext">Was haben Sie zum Beispiel gesucht, oder wer hat Sie empfohlen? <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-freitext">Was haben Sie zum Beispiel gesucht, oder wer hat Sie empfohlen?</label>
           <textarea id="p-freitext" name="freitext" rows="3" maxlength="500" data-feld="freitext"></textarea>
           <p class="formular__fehler" data-fehler="freitext" hidden></p>
         </div>
@@ -729,7 +721,15 @@
         <label>Ihre E-Mail-Adresse<input type="email" name="email" autocomplete="email" maxlength="254" placeholder="name@firma.de" required data-studie-email aria-describedby="studie-fehler"></label>
         <p class="formular__fehler" id="studie-fehler" data-studie-fehler hidden></p>
       </div>
-      <p class="etikett">Nach der Eingabe Ihrer E-Mail-Adresse wird Ihnen die Datei zur Verfügung gestellt. Es gelten die <a class="textlink" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutzrichtlinien</a>.</p>
+      <div class="formular__feld formular__feld--haken">
+        <input id="studie-einwilligung" name="einwilligung" type="checkbox" required data-studie-einwilligung>
+        <label for="studie-einwilligung">Ich stimme den <a class="textlink" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutzrichtlinien</a> zu. Meine E-Mail-Adresse wird zum Versand der Datei und für Rückfragen dazu verarbeitet.</label>
+      </div>
+      <div class="strecke__falle" aria-hidden="true">
+        <label for="studie-webseite">Webseite</label>
+        <input id="studie-webseite" name="webseite" type="text" tabindex="-1" autocomplete="off" data-studie-falle>
+      </div>
+      <p class="etikett">Nach der Eingabe Ihrer E-Mail-Adresse wird Ihnen die Datei zur Verfügung gestellt.</p>
       <button class="knopf" type="submit" data-studie-absenden>Jetzt herunterladen <svg class="studie__icon studie__icon--klein" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></button>
     </form>
   </div>

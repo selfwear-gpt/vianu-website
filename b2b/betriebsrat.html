@@ -35,6 +35,7 @@
 <script src="../assets/js/site.js" defer></script>
 <script src="../assets/js/position.js" defer></script>
 <script src="../assets/js/fortschritt.js" defer></script>
+<script src="../assets/js/scrollschritte.js" defer></script>
 <script src="../assets/js/formular.js" defer></script>
 <script src="../assets/js/versand.js" defer></script>
 <script src="../assets/js/sitzung.js" defer></script>
@@ -248,9 +249,9 @@
     <div class="behaelter">
       <div class="abschnitt__kopf">
         <h2 id="datenfluss-titel">Daten und Datenschutz</h2>
-        <p>So laufen die Daten von der Fußerfassung bis zum Bericht. Fahren Sie mit der Maus über einen Punkt oder tippen Sie ihn an.</p>
+        <p>So laufen die Daten von der Fußerfassung bis zum Bericht. Wählen Sie einen Punkt oder tippen Sie ihn an.</p>
       </div>
-      <div class="fluss fluss--klick fluss--karte" data-fluss data-fluss-hover>
+      <div class="fluss fluss--klick fluss--karte" data-fluss data-fluss-scroll>
         <figure class="fluss__karte">
           <svg class="karte" viewBox="0 0 320 416" role="img" aria-label="Stilisierte Karte: Deutschland liegt innerhalb der EU. Die Fotos werden in der EU verarbeitet, die Sohle wird in Deutschland gedruckt." focusable="false">
             <path class="karte__de" data-fluss-punkt="3" d="M130.1 394.1L118.9 386.4L109.0 387.2L98.9 381.0L93.4 385.6L98.9 388.2L94.3 390.5L77.8 392.0L65.9 389.8L67.6 361.1L74.9 336.2L84.8 323.2L84.6 318.6L67.4 314.0L62.2 309.3L48.6 311.4L47.5 307.9L43.9 306.5L38.8 308.9L32.2 296.7L25.9 293.7L30.6 275.7L23.1 271.9L18.2 260.3L20.4 253.1L26.6 248.8L25.8 241.7L20.5 238.0L22.4 234.2L14.5 226.2L16.3 218.1L10.0 211.6L18.9 205.5L17.2 201.5L21.2 189.7L13.0 171.4L20.1 167.3L26.3 170.2L39.0 165.8L41.0 162.1L38.4 156.9L48.1 147.3L47.5 139.3L39.2 137.0L37.3 133.5L39.2 128.1L47.9 128.1L53.3 110.8L53.9 94.4L49.2 89.5L54.2 75.0L80.5 73.1L85.6 80.8L83.7 84.7L88.2 85.9L91.1 77.5L96.3 82.3L96.4 88.5L97.5 68.4L100.4 63.5L109.6 65.6L119.7 64.5L132.1 77.8L138.6 80.2L133.6 77.8L123.1 64.4L112.2 60.9L109.8 57.0L109.9 43.4L105.7 40.7L101.3 41.7L101.4 36.3L111.4 32.7L111.5 29.0L102.5 15.8L102.1 10.0L109.8 10.3L121.3 15.0L133.1 12.5L142.2 16.4L146.4 21.9L146.6 26.8L141.4 32.4L150.4 31.6L152.6 35.7L157.5 34.2L169.6 40.6L178.9 37.3L180.5 42.4L178.7 47.6L172.2 53.1L173.7 56.5L191.5 59.9L204.5 49.4L214.8 48.3L230.0 32.7L244.9 35.6L248.8 42.3L258.6 49.7L267.7 49.0L272.3 64.7L277.5 69.1L285.2 71.1L290.2 98.7L280.9 115.4L297.0 133.6L294.9 142.4L301.4 156.9L296.4 169.8L300.4 178.7L300.4 185.9L306.4 189.0L310.0 200.0L301.8 222.6L296.8 220.7L294.6 213.5L287.2 211.2L285.1 213.1L288.8 218.4L262.2 228.5L258.2 233.9L256.2 232.8L249.9 238.6L244.5 239.7L242.1 244.1L236.3 242.8L229.2 244.7L220.3 255.8L214.1 249.5L218.0 260.1L228.0 270.6L224.0 278.8L233.5 295.7L237.8 300.1L241.2 300.1L257.1 318.4L261.9 319.4L270.6 329.4L267.7 341.1L259.9 339.0L256.2 350.5L240.6 358.7L236.1 363.7L242.4 375.0L240.6 383.8L245.7 387.3L244.4 396.5L237.7 393.1L236.5 388.1L233.7 386.5L227.0 388.2L218.0 384.0L217.3 389.1L201.9 391.0L188.2 399.2L179.8 400.9L174.3 394.3L160.1 392.6L157.8 402.3L151.7 406.8L152.2 402.4L147.9 400.9L144.8 395.1L137.5 391.4Z"/>
@@ -527,12 +528,11 @@
   <section class="abschnitt" id="weiterleiten" aria-labelledby="weiterleiten-titel">
     <div class="behaelter">
       <div class="abschnitt__kopf">
-        <h2 id="weiterleiten-titel">An die nächste Person im Entscheidungsteam</h2>
-        <p>Jede Rolle hat eine eigene Seite. Diese Seite gibt es auch als Einseiter zum Weiterleiten.</p>
+        <h2 id="weiterleiten-titel">Diese Seite weitergeben</h2>
+        <p>Kopieren Sie den Link und schicken Sie ihn an die nächste Person im Entscheidungsteam.</p>
       </div>
       <div class="weiter" data-weiterleiten data-weiterleiten-diese-seite>
         <div class="weiter__aktionen">
-          <a class="knopf knopf--dunkel" href="../assets/downloads/rolle-betriebsrat.pdf" data-studie-datei="../assets/downloads/rolle-betriebsrat.pdf" data-studie-name="rolle-betriebsrat.pdf" data-studie-titel="Einseiter: Betriebsrat">Einseiter als PDF</a>
           <button class="knopf knopf--dunkel" type="button" data-weiterleiten-kopieren>Link zu dieser Seite kopieren</button>
           <a class="knopf" href="./#pilot" data-pilot-oeffnen>Kontakt aufnehmen
             <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><path d="M1 6h11M8 1.5L12.5 6 8 10.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -540,13 +540,6 @@
         </div>
         <p class="weiter__status" role="status" data-weiterleiten-status></p>
         <input class="weiter__feld" type="text" readonly hidden aria-label="Link zu dieser Seite" data-weiterleiten-link>
-        <h3>Die anderen Rollen</h3>
-        <ul class="weiter__liste">
-          <li><a class="textlink" href="personal.html">Personal</a></li>
-          <li><a class="textlink" href="geschaeftsfuehrung.html">Geschäftsführung und Betrieb</a></li>
-          <li><a class="textlink" href="arbeitsschutz.html">Arbeitsschutz</a></li>
-          <li><a class="textlink" href="einkauf.html">Einkauf</a></li>
-        </ul>
       </div>
     </div>
   </section>
@@ -564,7 +557,15 @@
         <label>Ihre E-Mail-Adresse<input type="email" name="email" autocomplete="email" maxlength="254" placeholder="name@firma.de" required data-studie-email aria-describedby="studie-fehler"></label>
         <p class="formular__fehler" id="studie-fehler" data-studie-fehler hidden></p>
       </div>
-      <p class="etikett">Nach der Eingabe Ihrer E-Mail-Adresse wird Ihnen die Datei zur Verfügung gestellt. Es gelten die <a class="textlink" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutzrichtlinien</a>.</p>
+      <div class="formular__feld formular__feld--haken">
+        <input id="studie-einwilligung" name="einwilligung" type="checkbox" required data-studie-einwilligung>
+        <label for="studie-einwilligung">Ich stimme den <a class="textlink" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutzrichtlinien</a> zu. Meine E-Mail-Adresse wird zum Versand der Datei und für Rückfragen dazu verarbeitet.</label>
+      </div>
+      <div class="strecke__falle" aria-hidden="true">
+        <label for="studie-webseite">Webseite</label>
+        <input id="studie-webseite" name="webseite" type="text" tabindex="-1" autocomplete="off" data-studie-falle>
+      </div>
+      <p class="etikett">Nach der Eingabe Ihrer E-Mail-Adresse wird Ihnen die Datei zur Verfügung gestellt.</p>
       <button class="knopf" type="submit" data-studie-absenden>Jetzt herunterladen <svg class="studie__icon studie__icon--klein" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></button>
     </form>
   </div>
@@ -602,14 +603,14 @@
       </div>
       <div class="kontakt__schritt" data-schritt="1">
         <div class="formular__feld">
-          <label for="p-anliegen">Ihr Anliegen <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-anliegen">Ihr Anliegen</label>
           <textarea id="p-anliegen" name="anliegen" rows="3" maxlength="500" placeholder="Ich möchte mehr Infos erhalten für einen ersten möglichen Pilottest für 10 Mitarbeitende." data-feld="anliegen"></textarea>
           <p class="formular__fehler" data-fehler="anliegen" hidden></p>
         </div>
       </div>
       <div class="kontakt__schritt" data-schritt="2">
         <div class="formular__feld">
-          <label for="p-branche">Art der Tätigkeit <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-branche">Art der Tätigkeit</label>
           <select id="p-branche" name="branche" data-feld="branche">
             <option value="">Bitte wählen</option>
             <option value="hotel-gastronomie">Hotel und Gastronomie</option>
@@ -648,7 +649,7 @@
           <p class="formular__fehler" data-fehler="unternehmen" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-rolle">Ihre Rolle im Unternehmen <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-rolle">Ihre Rolle im Unternehmen</label>
           <select id="p-rolle" name="rolle" data-feld="rolle">
             <option value="">Bitte wählen</option>
             <option value="personal">Personal</option>
@@ -661,7 +662,7 @@
           <p class="formular__fehler" data-fehler="rolle" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-stadt">Stadt <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-stadt">Stadt</label>
           <input id="p-stadt" name="stadt" type="text" autocomplete="address-level2" maxlength="120" data-feld="stadt">
           <p class="formular__fehler" data-fehler="stadt" hidden></p>
         </div>
@@ -683,7 +684,7 @@
           <p class="formular__fehler" data-fehler="quelle" hidden></p>
         </div>
         <div class="formular__feld">
-          <label for="p-freitext">Was haben Sie zum Beispiel gesucht, oder wer hat Sie empfohlen? <span class="kontakt__frei">(freiwillig)</span></label>
+          <label for="p-freitext">Was haben Sie zum Beispiel gesucht, oder wer hat Sie empfohlen?</label>
           <textarea id="p-freitext" name="freitext" rows="3" maxlength="500" data-feld="freitext"></textarea>
           <p class="formular__fehler" data-fehler="freitext" hidden></p>
         </div>

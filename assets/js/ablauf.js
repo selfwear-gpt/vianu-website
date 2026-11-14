@@ -3,6 +3,7 @@
   Darin: Tasten [data-schritt="n"] (aria-pressed), Flächen [data-screen="n"], optional [data-cta-schritt="n"] (Knopf im Bild, nur bei Schritt n sichtbar), [data-ablauf-beschreibung]
   und .handy__ecken (Animation beim zweiten Schritt neu starten). Das Skript blendet alle Flächen außer der des
   gewählten Schritts aus. Flächen im HTML tragen deshalb kein hidden, ohne Skript steht alles lesbar da.
+  Auf dem Laptop wählt das Scrollen den Schritt (scrollschritte.js), das Darüberfahren mit der Maus schaltet nicht mehr um. Klick, Tippen und Tastatur gehen weiter.
 */
 (function () {
   var reduziert = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -32,10 +33,16 @@
         ecken.style.animation = "";
       }
     }
-    Array.prototype.forEach.call(knoepfe, function (k) {
-      k.addEventListener("click", function () { waehle(k.getAttribute("data-schritt")); });
-      // Mit der Maus öffnet schon das Darüberfahren den Schritt. Tippen, Tastatur und Fokus laufen über click.
-      k.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") waehle(k.getAttribute("data-schritt")); });
+    // Auf dem Laptop bleibt das Bild beim Scrollen stehen und die Lage beim Scrollen wählt den Schritt
+    var raster = wurzel.querySelector(".ablauf__raster");
+    var liste = wurzel.querySelector(".ablauf__liste");
+    var bild = wurzel.querySelector(".ablauf__bild");
+    var scroll = window.VianuScrollSchritte && raster && liste && bild
+      ? window.VianuScrollSchritte.binde(raster, [liste, bild], knoepfe.length, function (i) { waehle(knoepfe[i].getAttribute("data-schritt")); })
+      : null;
+    Array.prototype.forEach.call(knoepfe, function (k, i) {
+      // Tippen, Tastatur und Fokus laufen über click. Auf dem Laptop springt die Seite dabei zur Stelle des Schritts.
+      k.addEventListener("click", function () { waehle(k.getAttribute("data-schritt")); if (scroll) scroll.springe(i); });
     });
     waehle("1");
   }

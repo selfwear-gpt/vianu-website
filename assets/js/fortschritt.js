@@ -1,6 +1,6 @@
 /*
   Scroll-Fortschritt für Bewegungen, die am Scrollen hängen. Schnittstelle:
-  fortschrittImBild(oben, hoehe, fenster), aktiverSchritt(fortschritt, anzahl), sichtbareAnzahl(fortschritt, anzahl),
+  fortschrittImBild(oben, hoehe, fenster), fortschrittBisUnterkante(oben, hoehe, fenster, start, ende), schrittImRaster(oben, hoehe, buehne, haften, anzahl), versatzFuerSchritt(i, hoehe, buehne, anzahl), aktiverSchritt(fortschritt, anzahl), sichtbareAnzahl(fortschritt, anzahl),
   anteilZwischen(wert, von, bis), zeigerWinkel(anteil, startStunde, endStunde), kreisInnen(istInnen, cx, cy, r, abstand).
   Reine Funktionen ohne Browserbezug. Der Fortschritt ist immer umkehrbar: gleicher Stand, gleiches Bild.
 */
@@ -17,6 +17,31 @@
     var strecke = fenster + hoehe;
     if (!(strecke > 0)) return 0;
     return begrenze((fenster - oben) / strecke);
+  }
+
+  // 0, wenn die Oberkante des Bereichs bei start (Anteil der Fensterhöhe) liegt, 1, wenn seine Unterkante bei ende (Anteil der
+  // Fensterhöhe) liegt. Der Bereich ist also fertig, solange er noch ganz im Bild steht. Ist er kürzer als der Abstand zwischen
+  // start und ende, springt der Wert dort von 0 auf 1.
+  function fortschrittBisUnterkante(oben, hoehe, fenster, start, ende) {
+    var strecke = hoehe - (ende - start) * fenster;
+    if (!(fenster > 0) || !(strecke > 0)) return oben <= start * fenster ? 1 : 0;
+    return begrenze((start * fenster - oben) / strecke);
+  }
+
+  // Raster mit festgehaltener Bühne: Das Raster ist hoch, die Bühne (Höhe buehne) klebt bei haften am oberen Rand. Welcher von
+  // anzahl Schritten steht gerade, wenn die Oberkante des Rasters bei oben liegt? 0 bis anzahl - 1, vor dem Festkleben 0.
+  function schrittImRaster(oben, hoehe, buehne, haften, anzahl) {
+    var strecke = hoehe - buehne;
+    if (!(strecke > 0)) return 0;
+    return aktiverSchritt(anteilZwischen(haften - oben, 0, strecke), anzahl);
+  }
+
+  // Umkehrung dazu: Wie viele Pixel ab der Oberkante des Rasters muss man scrollen, damit Schritt i (ab 0) mitten in seinem Abschnitt steht?
+  function versatzFuerSchritt(i, hoehe, buehne, anzahl) {
+    var strecke = hoehe - buehne;
+    if (!(strecke > 0) || !(anzahl >= 1)) return 0;
+    var k = i < 0 ? 0 : i > anzahl - 1 ? anzahl - 1 : i;
+    return ((k + 0.5) / anzahl) * strecke;
   }
 
   // Welcher von anzahl Schritten ist aktiv: 0 bis anzahl - 1
@@ -59,6 +84,9 @@
   return {
     kreisInnen: kreisInnen,
     fortschrittImBild: fortschrittImBild,
+    fortschrittBisUnterkante: fortschrittBisUnterkante,
+    schrittImRaster: schrittImRaster,
+    versatzFuerSchritt: versatzFuerSchritt,
     aktiverSchritt: aktiverSchritt,
     sichtbareAnzahl: sichtbareAnzahl,
     anteilZwischen: anteilZwischen,

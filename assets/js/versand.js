@@ -2,6 +2,7 @@
   Versand an HubSpot. Schnittstelle: VianuVersand.sende(nutzlast, ziel[, abruf]) -> Promise<boolean>, VianuVersand.ADRESSEN.
   ziel "strecke": Anfrage-Strecke an das Formular "VIANU_Anfrage_Strecke_DE" (ADR 0004).
   ziel "kontakt": Kontaktformular im Popup an das Formular "B2E_Contact_HoReCa_DE" (ADR 0005).
+  ziel "download": E-Mail-Adresse und Dateikennung aus dem Download-Popup an das Formular "VIANU_Download_DE" (ADR 0006).
   Portal 148774847, Region EU. Gesendet wird erst beim Absenden, beim Laden der Seite geht nichts an HubSpot.
   true heißt: HubSpot hat mit 2xx geantwortet. Bei Fehler, Netzausfall, fehlender Nutzlast oder unbekanntem Ziel kommt false.
 */
@@ -12,7 +13,8 @@
   var BASIS = "https://api-eu1.hsforms.com/submissions/v3/integration/submit/148774847/";
   var ADRESSEN = {
     strecke: BASIS + "25ad3edf-217a-44f3-9620-20c39402c65c",
-    kontakt: BASIS + "82eaa356-32c7-4201-a4da-407abd285d1a"
+    kontakt: BASIS + "82eaa356-32c7-4201-a4da-407abd285d1a",
+    download: BASIS + "9b9907d4-4c70-4a9a-9e1d-751f47bdd8b1"
   };
 
   function sende(nutzlast, ziel, abruf) {

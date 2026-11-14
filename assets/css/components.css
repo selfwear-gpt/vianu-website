@@ -716,6 +716,22 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
   .ablauf__bild { position: static; order: -1; }
   .handy { width: 10rem; }
 }
+/* Scroll statt Hover (Laptop, scrollschritte.js): Das Raster wird hoch, Liste und Bild kleben im Bild, das Scrollen wählt den Schritt.
+   Die Klasse setzt das Skript nur bei Maus mit Hover, ab 56rem Breite und ohne reduzierte Bewegung. Sonst bleibt alles wie vorher. */
+.scroll-schritte {
+  --scroll-haften: calc(var(--menue-hoehe) + var(--abstand-6));
+  grid-template-rows: minmax(calc(var(--schritte, 4) * 60vh), auto);
+}
+.scroll-schritte > .ablauf__liste, .scroll-schritte > .ablauf__bild, .scroll-schritte > .fluss__liste, .scroll-schritte > .fluss__karte {
+  position: sticky;
+  top: var(--scroll-haften);
+  align-self: start;
+}
+/* Die Karte soll samt Legende in niedrige Fenster passen, solange sie klebt */
+.scroll-schritte .fluss__karte .karte { max-height: calc(100svh - var(--scroll-haften) - 6rem); }
+/* Darüberfahren wählt nichts mehr aus, deshalb zeigt es auch nichts mehr an: Nur der gewählte Schritt ist farbig */
+.scroll-schritte .ablauf__schritt:hover:not([aria-pressed="true"]) { background: var(--farbe-papier); color: var(--farbe-tinte); }
+.scroll-schritte .ablauf__schritt:hover:not([aria-pressed="true"]) .ablauf__bahn { background: var(--farbe-tinte); color: var(--farbe-papier); }
 /* ---------- Fragen ---------- */
 .fragen__gruppe + .fragen__gruppe { margin-top: var(--abstand-7); }
 .fragen__titel { margin: 0 0 var(--abstand-3); font-weight: 700; }
@@ -776,7 +792,7 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
   .druck { width: min(100%, 13rem); }
 }
 /* ---------- Programm: Zeitleiste und Merkmale ---------- */
-.zeit, .klein__stufen, .messwerte, .sorgen__fuss, .unterlagen, .weiter__liste { list-style: none; margin: 0; padding: 0; }
+.zeit, .klein__stufen, .messwerte, .sorgen__fuss, .unterlagen { list-style: none; margin: 0; padding: 0; }
 .zeit { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 4fr); border-top: 3px solid var(--farbe-tinte); }
 .unterlagen { display: flex; flex-direction: column; border-top: 1px solid var(--farbe-tinte); }
 .unterlagen__eintrag { display: flex; align-items: center; justify-content: space-between; gap: var(--abstand-2); padding: var(--abstand-3) 0; border-bottom: 1px solid var(--farbe-tinte); font-size: var(--schrift-groesse-klein); }
@@ -944,7 +960,6 @@ a.wert__text:hover p { text-decoration: underline; text-underline-offset: 4px; }
 .formular__status, .weiter__status { min-height: 1.5em; font-weight: 600; font-size: var(--schrift-groesse-klein); }
 .pilot__seite { display: flex; flex-direction: column; gap: var(--abstand-6); }
 .weiter { display: flex; flex-direction: column; align-items: flex-start; gap: var(--abstand-3); }
-.weiter__liste { display: flex; flex-direction: column; gap: var(--abstand-2); }
 .weiter__feld { width: 100%; padding: var(--abstand-2) var(--abstand-3); border: var(--kante) solid var(--farbe-tinte); background: var(--farbe-papier); color: var(--farbe-tinte); font: inherit; font-size: var(--schrift-groesse-klein); }
 @media (max-width: 56rem) {
   .pilot__raster { grid-template-columns: minmax(0, 1fr); }
@@ -2301,7 +2316,6 @@ main:focus { outline: none; }
 .kontakt__fortschritt { display: flex; flex-direction: column; gap: var(--abstand-2); }
 .kontakt__balken { height: 0.5rem; border: 2px solid var(--farbe-tinte); }
 .kontakt__fuellung { display: block; height: 100%; width: calc(var(--anteil, 0.2) * 100%); background: var(--farbe-signal); transition: width 0.2s ease-out; }
-.kontakt__frei { font-weight: 400; font-size: var(--schrift-groesse-klein); }
 .kontakt__knoepfe { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--abstand-3); }
 .kontakt__knoepfe .knopf { margin-left: auto; }
 .kontakt__zurueck { background: none; border: 0; padding: 0; cursor: pointer; }

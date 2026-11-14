@@ -1,6 +1,6 @@
 /*
   Bausteine der Rollenseiten. Schnittstelle: Elemente mit [data-pruefliste], [data-fluss] und [data-filter] arbeiten für sich.
-  Prüfliste: Schalter zum Abhaken, nur Ansicht, nichts wird gespeichert. Ab drei Haken erscheint [data-pruefliste-pilot]. Datenfluss: ein Feld pro Knoten, der gewählte Knoten zeigt seinen Text.
+  Prüfliste: Schalter zum Abhaken, nur Ansicht, nichts wird gespeichert. Ab drei Haken erscheint [data-pruefliste-pilot]. Datenfluss: ein Feld pro Knoten, der gewählte Knoten zeigt seinen Text. Mit [data-fluss-scroll] wählt auf dem Laptop das Scrollen den Knoten statt der Maus.
   Filter: blendet Zeilen der Statusliste nach Status ein und aus. Ohne Skript stehen alle Inhalte lesbar da.
   Chat-Brief [data-chat]: die Nachrichten stehen im HTML, das Skript blendet sie beim Scrollen nacheinander ein (in Rahmen ohne Scrollen per Mausrad, Wisch oder Tipp), vorher erscheinen Tippen-Punkte.
   Das Menü "Chat von vorne starten" setzt zurück. Eingabefeld, Mikro- und Sendeknopf öffnen das Kontaktformular (Nachricht im Feld "Anliegen").
@@ -46,13 +46,14 @@
         else p.removeAttribute("data-aktiv");
       });
     }
-    var zeiger = window.matchMedia ? window.matchMedia("(hover: hover) and (pointer: fine)") : null;
+    // [data-fluss-scroll]: Auf dem Laptop bleibt die Karte beim Scrollen stehen und die Lage beim Scrollen wählt den Punkt (scrollschritte.js)
+    var karte = wurzel.querySelector(".fluss__karte");
+    var liste = wurzel.querySelector(".fluss__liste");
+    var scroll = wurzel.hasAttribute("data-fluss-scroll") && window.VianuScrollSchritte && karte && liste
+      ? window.VianuScrollSchritte.binde(wurzel, [karte, liste], knoten.length, function (i) { waehle(knoten[i].getAttribute("data-fluss-knoten")); })
+      : null;
     Array.prototype.forEach.call(knoten, function (k, i) {
-      k.addEventListener("click", function () { waehle(k.getAttribute("data-fluss-knoten")); });
-      // Mit der Maus öffnet schon das Darüberfahren den Punkt
-      if (wurzel.hasAttribute("data-fluss-hover")) {
-        k.parentNode.addEventListener("mouseenter", function () { if (zeiger && zeiger.matches) waehle(k.getAttribute("data-fluss-knoten")); });
-      }
+      k.addEventListener("click", function () { waehle(k.getAttribute("data-fluss-knoten")); if (scroll) scroll.springe(i); });
       k.addEventListener("keydown", function (e) {
         var ziel = null;
         if (e.key === "ArrowRight" || e.key === "ArrowDown") ziel = (i + 1) % knoten.length;
@@ -60,6 +61,7 @@
         if (ziel === null) return;
         e.preventDefault();
         waehle(knoten[ziel].getAttribute("data-fluss-knoten"), true);
+        if (scroll) scroll.springe(ziel);
       });
     });
     waehle("1");
@@ -232,13 +234,20 @@
     function kuerzen() {
       var abschnitt = wurzel.closest("section");
       var danach = abschnitt && abschnitt.nextElementSibling;
+      // Ausgeblendete Abschnitte (display: none, zum Beispiel die zurückgestellten Kundenstimmen) haben keine Position: Sie messen immer 0
+      // und ließen den Ausgleich ausfallen. Als Bezug dient der erste sichtbare Abschnitt danach.
+      while (danach && !danach.getClientRects().length) danach = danach.nextElementSibling;
       var d = document.documentElement;
       var vorher = danach ? danach.getBoundingClientRect().top : 0;
       wurzel.classList.add("chat--kurz");
       var nachher = danach ? danach.getBoundingClientRect().top : 0;
       if (nachher !== vorher) {
+        // Ohne eigenen Ausgleich des Browsers (zum Beispiel Safari) rutscht der Inhalt sofort um die ganze Strecke. Der Ausgleich muss
+        // deshalb im selben Schritt und ohne Animation laufen. html { scroll-behavior: smooth } würde ihn sonst verzögern, die Seite spränge.
         d.style.overflowAnchor = "none";
-        window.scrollBy(0, nachher - vorher);
+        d.style.scrollBehavior = "auto";
+        window.scrollBy({ top: nachher - vorher, left: 0, behavior: "instant" });
+        d.style.scrollBehavior = "";
         window.requestAnimationFrame(function () { d.style.overflowAnchor = ""; });
       }
     }
@@ -438,7 +447,9 @@
     function aktualisiere() {
       geplant = false;
       var r = wurzel.getBoundingClientRect();
-      setze(Math.min(1, F.fortschrittImBild(r.top, r.height, window.innerHeight) / 0.6));
+      // Die Kurve beginnt, wenn der Block unten ins Bild kommt (Oberkante bei 85 Prozent), und ist fertig, sobald er ganz sichtbar ist
+      // (Unterkante bei 90 Prozent der Fensterhöhe). So endet die Bewegung, solange der Block noch im Bild steht.
+      setze(F.fortschrittBisUnterkante(r.top, r.height, window.innerHeight, 0.85, 0.9));
     }
     function planen() { if (!geplant) { geplant = true; window.requestAnimationFrame(aktualisiere); } }
     window.addEventListener("scroll", planen, { passive: true });
