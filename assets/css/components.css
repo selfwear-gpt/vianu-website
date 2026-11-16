@@ -1240,7 +1240,8 @@ svg.weg { width: 100%; height: auto; max-height: 34rem; }
 .sorgen__umriss polygon { fill: none; stroke: var(--farbe-tinte); stroke-width: 4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .sorgen__eintrag--5 .sorge__vorn, .sorgen__eintrag--5 .sorge__hinten, .sorgen__eintrag--6 .sorge__vorn, .sorgen__eintrag--6 .sorge__hinten { padding-right: 16%; }
 .sorgen__eintrag--1 .sorge__vorn, .sorgen__eintrag--1 .sorge__hinten { padding-left: 14%; }
-@media (max-width: 56rem) {
+/* Gleiche Bedingung wie das Handy-Layout der Kacheln (Zeile "Sorgen und Bedenken"), sonst liegt die gestreckte Fußlinie auf dem Tablet über der Liste */
+@media (max-width: 56rem), (hover: none) and (pointer: coarse) {
   .sorgen__umriss { display: none; }
 }
 .sorgen__eintrag--1, .sorgen__eintrag--2, .sorgen__eintrag--3, .sorgen__eintrag--4, .sorgen__eintrag--5, .sorgen__eintrag--6 { border-radius: 0; }
@@ -1258,16 +1259,16 @@ svg.weg { width: 100%; height: auto; max-height: 34rem; }
 .sorgen__eintrag--3 .sorge__vorn, .sorgen__eintrag--3 .sorge__hinten { justify-content: flex-end; gap: var(--abstand-1); padding-top: clamp(1.75rem, 3vw, 2.5rem); padding-bottom: var(--abstand-2); }
 .sorgen__eintrag--3 .sorge__kurz { font-size: clamp(1rem, 1.55vw, 1.35rem); }
 .sorgen__eintrag--2 .sorge__vorn, .sorgen__eintrag--2 .sorge__hinten { justify-content: flex-start; padding-top: var(--abstand-3); }
-@media (max-width: 56rem) {
+@media (max-width: 56rem), (hover: none) and (pointer: coarse) {
   .sorgen__eintrag--1 .sorge__vorn, .sorgen__eintrag--1 .sorge__hinten, .sorgen__eintrag--5 .sorge__vorn, .sorgen__eintrag--5 .sorge__hinten, .sorgen__eintrag--6 .sorge__vorn, .sorgen__eintrag--6 .sorge__hinten { padding-left: var(--abstand-5); padding-right: var(--abstand-5); }
   .sorgen__eintrag--2 .sorge__vorn, .sorgen__eintrag--2 .sorge__hinten, .sorgen__eintrag--3 .sorge__vorn, .sorgen__eintrag--3 .sorge__hinten { justify-content: center; padding-block: var(--abstand-4); }
 }
 .sorgen__eintrag--2 .sorge__vorn, .sorgen__eintrag--2 .sorge__hinten { padding-right: 38%; }
-@media (max-width: 56rem) {
+@media (max-width: 56rem), (hover: none) and (pointer: coarse) {
   .sorgen__eintrag--2 .sorge__vorn, .sorgen__eintrag--2 .sorge__hinten { padding-right: var(--abstand-5); }
 }
 /* Karte "Wer sieht meine Fotos?": liegt am Rand des Fußumrisses, der Text bleibt in der oberen linken Ecke und hält Abstand zur Linie */
-@media (min-width: 56.0625rem) {
+@media (min-width: 56.0625rem) and (hover: hover), (min-width: 56.0625rem) and (pointer: fine) {
   .sorgen__eintrag--2 .sorge__vorn, .sorgen__eintrag--2 .sorge__hinten { gap: var(--abstand-1); padding-top: var(--abstand-2); padding-right: 48%; }
   .sorgen__eintrag--2 .sorge__hinten { padding-right: 40%; }
   .sorgen__eintrag--2 .sorge__frage { font-size: clamp(0.7rem, 1vw, 0.9rem); }
