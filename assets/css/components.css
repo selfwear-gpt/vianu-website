@@ -2285,7 +2285,14 @@ main:focus { outline: none; }
 .geschichte__person { display: flex; flex-direction: column; gap: var(--abstand-3); min-width: 0; }
 .geschichte__foto { flex: 1; min-height: 20rem; }
 .geschichte__foto .foto__bild { border-color: var(--farbe-papier); }
-.geschichte__band .geschichte__satz { align-self: center; }
+/* Angebot im Roddy-Band: Titel, Text, darunter das Zitat klein im dünnen Kasten, unten bündig mit der Bildunterschrift */
+.geschichte__angebot { display: flex; flex-direction: column; gap: var(--abstand-3); min-width: 0; }
+.geschichte__titel { margin: 0; font-size: clamp(1.7rem, 3.2vw, 2.75rem); line-height: 1.04; }
+.geschichte__angebot p { margin: 0; max-width: 60ch; }
+.geschichte__lead { font-weight: 700; }
+.geschichte__zitat { margin: auto 0 0; padding: var(--abstand-3) var(--abstand-4); border: 1px solid var(--farbe-papier); max-width: 60ch; }
+.geschichte__zitat p { font-size: 0.95rem; line-height: 1.35; }
+.abschnitt__lead { font-weight: 700; }
 @media (max-width: 40rem) { .geschichte__band { grid-template-columns: minmax(0, 1fr); } .geschichte__foto { aspect-ratio: 4 / 3; flex: none; } .geschichte__person { max-width: 16rem; } }
 .foto--garantie { aspect-ratio: 3 / 4; max-width: 100%; --ausschnitt: 60% 40%; }
 .foto--gespraech { --ausschnitt: 50% 32%; }
