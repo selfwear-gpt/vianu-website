@@ -2290,9 +2290,9 @@ main:focus { outline: none; }
 .geschichte__titel { margin: 0; font-size: clamp(1.7rem, 3.2vw, 2.75rem); line-height: 1.04; }
 .geschichte__angebot > p { margin: 0; max-width: none; }
 .geschichte__lead { font-weight: 700; }
-.geschichte__zitat { margin: auto 0 0; padding: var(--abstand-4) var(--abstand-5) 0; display: flex; flex-direction: column; align-items: center; gap: var(--abstand-3); text-align: center; }
+.geschichte__zitat { margin: auto 0 0; padding: var(--abstand-5) var(--abstand-5) 0; display: flex; flex-direction: column; align-items: center; gap: var(--abstand-3); text-align: center; }
 .geschichte__zitat p { margin: 0; max-width: none; }
-.geschichte__zitat p:first-of-type { font-family: var(--schrift-kopf); font-weight: 600; font-size: clamp(1.35rem, 2.3vw, 1.75rem); line-height: 1.2; text-wrap: balance; max-width: 60rem; }
+.geschichte__zitat p:first-of-type { font-family: var(--schrift-kopf); font-weight: 600; font-size: clamp(1.35rem, 2.3vw, 1.75rem); line-height: 1.25; text-wrap: balance; max-width: 60rem; }
 /* Große Anführungszeichen: gleich groß, laufen als Inline-Zeichen mit den zentrierten Zeilen. Oben links vor dem Text, unten rechts am Ende. */
 .geschichte__zitat p:first-of-type::before, .geschichte__zitat p:first-of-type::after { display: inline-block; position: relative; height: 0; line-height: 0; font-weight: 800; font-size: 3.2em; color: var(--farbe-signal); }
 .geschichte__zitat p:first-of-type::before { content: "\201E" / ""; margin-right: 0.02em; top: -0.17em; left: -0.08em; }
@@ -2300,6 +2300,17 @@ main:focus { outline: none; }
 :lang(en) .geschichte__zitat p:first-of-type::before { content: "\201C" / ""; top: 0.2em; }
 :lang(en) .geschichte__zitat p:first-of-type::after { content: "\201D" / ""; }
 .geschichte__zitat .band__name { text-wrap: balance; }
+.zitat__umbruch { display: none; }
+/* Laptop und iPad quer (ab 64rem): der Zitat-Block steht links in der Spalte, das öffnende Zeichen am linken Spaltenrand (unter dem Anfang der letzten Absatzzeile),
+   feste Umbruchstelle mit längerer zweiter Zeile, das schließende Zeichen steht am Ende der zweiten Zeile */
+@media (min-width: 64rem) {
+  .geschichte__zitat { align-self: flex-start; width: max-content; max-width: 100%; align-items: flex-start; padding-inline: 0; }
+  .geschichte__zitat p:first-of-type { position: relative; width: max-content; max-width: 100%; padding-left: 3.8rem; text-wrap: wrap; }
+  .zitat__umbruch { display: inline; }
+  .geschichte__zitat p:first-of-type::before { position: absolute; left: 0; top: -0.75rem; margin: 0; }
+  :lang(en) .geschichte__zitat p:first-of-type::before { top: 0.95rem; }
+  .geschichte__zitat .band__name { align-self: stretch; padding-left: 3.8rem; }
+}
 .abschnitt__lead { font-weight: 700; }
 #sohle .abschnitt__kopf { align-items: center; text-align: center; }
 #sohle .abschnitt__kopf p { max-width: none; }
