@@ -2285,30 +2285,25 @@ main:focus { outline: none; }
 .geschichte__person { display: flex; flex-direction: column; gap: var(--abstand-3); min-width: 0; }
 .geschichte__foto { flex: 1; min-height: 20rem; }
 .geschichte__foto .foto__bild { border-color: var(--farbe-papier); }
-/* Angebot im Roddy-Band: Titel, Text über die volle Spaltenbreite, darunter das Zitat mit pinker Kante, unten bündig mit dem Foto */
+/* Angebot im Roddy-Band: Titel, Text über die volle Spaltenbreite, darunter das Zitat zentriert, unten bündig mit dem Foto */
 .geschichte__angebot { display: flex; flex-direction: column; gap: var(--abstand-3); min-width: 0; }
 .geschichte__titel { margin: 0; font-size: clamp(1.7rem, 3.2vw, 2.75rem); line-height: 1.04; }
 .geschichte__angebot > p { margin: 0; max-width: none; }
 .geschichte__lead { font-weight: 700; }
-.geschichte__zitat { position: relative; margin: auto 0 0; padding: 0 0 0 var(--abstand-5); border-left: 4px solid var(--farbe-signal); max-width: 52rem; display: flex; flex-direction: column; gap: var(--abstand-2); }
-.geschichte__zitat::before { content: "\201E" / ""; display: block; font-family: var(--schrift-kopf); font-weight: 800; font-size: 4.5rem; line-height: 1; height: 2.1rem; margin-top: -0.4rem; transform: translateY(-2.9rem); color: var(--farbe-signal); }
+.geschichte__zitat { margin: auto 0 0; padding: var(--abstand-4) var(--abstand-5) 0; display: flex; flex-direction: column; align-items: center; gap: var(--abstand-3); text-align: center; }
 .geschichte__zitat p { margin: 0; max-width: none; }
-.geschichte__zitat p:first-of-type { font-family: var(--schrift-kopf); font-weight: 600; font-size: clamp(1.25rem, 2.1vw, 1.5rem); line-height: 1.2; }
-.geschichte__zitat p:first-of-type::after { content: "\201C" / ""; color: var(--farbe-signal); }
-.geschichte__zitat .etikett { color: var(--farbe-signal); }
-:lang(en) > .geschichte__angebot .geschichte__zitat::before, :lang(en) .geschichte__zitat::before { content: "\201C" / ""; transform: none; }
+.geschichte__zitat p:first-of-type { font-family: var(--schrift-kopf); font-weight: 600; font-size: clamp(1.35rem, 2.3vw, 1.75rem); line-height: 1.2; text-wrap: balance; max-width: 60rem; }
+/* Große Anführungszeichen: gleich groß, laufen als Inline-Zeichen mit den zentrierten Zeilen. Oben links vor dem Text, unten rechts am Ende. */
+.geschichte__zitat p:first-of-type::before, .geschichte__zitat p:first-of-type::after { display: inline-block; position: relative; height: 0; line-height: 0; font-weight: 800; font-size: 3.2em; color: var(--farbe-signal); }
+.geschichte__zitat p:first-of-type::before { content: "\201E" / ""; margin-right: 0.02em; top: -0.17em; left: -0.08em; }
+.geschichte__zitat p:first-of-type::after { content: "\201C" / ""; margin-left: 0.02em; top: 0.28em; left: 0.08em; }
+:lang(en) .geschichte__zitat p:first-of-type::before { content: "\201C" / ""; top: 0.2em; }
 :lang(en) .geschichte__zitat p:first-of-type::after { content: "\201D" / ""; }
+.geschichte__zitat .band__name { text-wrap: balance; }
 .abschnitt__lead { font-weight: 700; }
+#sohle .abschnitt__kopf { align-items: center; text-align: center; }
 #sohle .abschnitt__kopf p { max-width: none; }
-/* Laptop und Tablet: Foto und Angebot in einer Zeile, die Bildunterschrift darunter, das Zitat endet mit dem Foto */
-@media (min-width: 40.01rem) {
-  .geschichte__band { grid-template-rows: 1fr auto; row-gap: var(--abstand-3); }
-  .geschichte__person { display: contents; }
-  .geschichte__foto { grid-column: 1; grid-row: 1; }
-  .geschichte__person .band__name { grid-column: 1; grid-row: 2; margin: 0; }
-  .geschichte__angebot { grid-column: 2; grid-row: 1; }
-}
-@media (max-width: 40rem) { .geschichte__band { grid-template-columns: minmax(0, 1fr); } .geschichte__foto { aspect-ratio: 4 / 3; flex: none; } .geschichte__person { max-width: 16rem; } }
+@media (max-width: 40rem) { .geschichte__band { grid-template-columns: minmax(0, 1fr); } .geschichte__foto { aspect-ratio: 4 / 3; flex: none; } .geschichte__person { max-width: 16rem; } .geschichte__angebot { text-align: center; align-items: center; } .geschichte__zitat { padding-inline: 0; margin-top: var(--abstand-4); } }
 .foto--garantie { aspect-ratio: 3 / 4; max-width: 100%; --ausschnitt: 60% 40%; }
 .foto--gespraech { --ausschnitt: 50% 32%; }
 .geschichte__foto { --ausschnitt: 12% 40%; }
@@ -2468,7 +2463,6 @@ main:focus { outline: none; }
   /* B2B-Gründer: Foto, Bildunterschrift und Zitat mittig, danach mehr Luft */
   .geschichte__person { width: min(100%, 16rem); justify-self: center; margin-inline: auto; align-items: center; text-align: center; }
   .geschichte__foto { width: 100%; aspect-ratio: auto; min-height: 20rem; }
-  .geschichte__person .band__name { text-align: center; }
   .geschichte__satz { text-align: center; }
   .geschichte__kopf { padding-bottom: clamp(56px, 18vw, 88px); }
   .geschichte__kapitel--weg { padding-top: clamp(56px, 16vw, 80px); }
