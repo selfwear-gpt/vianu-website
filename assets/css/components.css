@@ -2297,8 +2297,6 @@ main:focus { outline: none; }
 .geschichte__zitat p:first-of-type::before, .geschichte__zitat p:first-of-type::after { display: inline-block; position: relative; height: 0; line-height: 0; font-weight: 800; font-size: 3.2em; color: var(--farbe-signal); }
 .geschichte__zitat p:first-of-type::before { content: "\201E" / ""; margin-right: 0.02em; top: -0.17em; left: -0.08em; }
 .geschichte__zitat p:first-of-type::after { content: "\201C" / ""; margin-left: 0.02em; top: 0.28em; left: 0.08em; }
-:lang(en) .geschichte__zitat p:first-of-type::before { content: "\201C" / ""; top: 0.45em; }
-:lang(en) .geschichte__zitat p:first-of-type::after { content: "\201D" / ""; }
 .geschichte__zitat .band__name { text-wrap: balance; }
 .zitat__umbruch { display: none; }
 /* Laptop und iPad quer (ab 64rem): der Zitat-Block steht links in der Spalte (unter dem Anfang der letzten Absatzzeile), feste Umbruchstelle mit längerer
